@@ -1,0 +1,124 @@
+@font-face {
+  font-family: 'GTWalsheimUltraBoldOblique';
+  src: url('./assets/fonts/GTWalsheimUltraBoldOblique.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app.thinking {
+  background: #C5C2A8
+}
+
+/* ---------- NAVBAR ---------- */
+.navbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  height: 5vh;
+  padding: 1rem 0;
+  background-color: #1a1a1a;
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  list-style: none;
+  gap: 2rem;
+}
+
+/* ---------- MAIN SECTION ---------- */
+
+.main-section {
+  height: 90vh;
+  display: flex;
+  flex-direction: column;  
+  align-items: center;
+  padding-top: 6rem;  
+  background-color: #C5C2A8
+}
+
+.canvas-wrapper {   
+  padding: 2rem 0;  
+  height: 80%;  
+  width: 100%;     
+  transition: width 0.5s ease-in-out, height 0.5s ease-in-out;  
+}
+
+h1 {
+  font-family: 'GTWalsheimUltraBoldOblique', sans-serif;
+  font-stretch: 200%;                 
+  letter-spacing: 0.06em;
+  transform: scaleX(1.25);             
+  display: inline-block;  
+  transition: transform 0.8s ease-out;            
+}
+
+.navbar.slide-up,
+h1.slide-up {
+  animation: slideUp 0.8s ease-out forwards;
+}
+
+@keyframes slideUp {
+  to {
+    transform: translateY(-100vh); 
+    opacity: 0;
+  }
+}
+
+/* ---------- FOOTER ---------- */
+
+.footer-wrapper {
+  height: 5vh;        
+  position: relative; /* Elements within will be positioned relative to the box */
+  overflow: hidden;  /* Will hide overflow for the elements within it*/
+}
+
+.footer {
+  position: absolute; 
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #1a1a1a;
+  transform: translateY(0);
+}
+  
+.footer.slide-down {
+  animation: flyDown 0.45s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes flyDown {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(120%); 
+    opacity: 0;
+  }
+}

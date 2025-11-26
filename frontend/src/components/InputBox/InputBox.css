@@ -1,0 +1,110 @@
+@font-face {
+  font-family: 'GTWalsheimLight';
+  src: url('/src/assets/fonts/GTWalsheimLight.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.input-bar {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(220, 225, 230, 0.15);  
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.18),      
+    0 4px 12px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-bar:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.15),
+    0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.input-bar input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #1a1a1a;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 0.5rem 0;
+  font-family: 'GTWalsheimLight';
+}
+
+.input-bar input::placeholder {
+  color: rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+  font-family: 'GTWalsheimLight';
+}
+
+.input-bar input:focus::placeholder {
+  color: rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.input-bar button {
+  background: #1a1a1a;
+  color: white;
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-bar button:hover {
+  background: #000000;
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.input-bar button:active {
+  transform: scale(0.95);
+}
+
+.input-bar {
+  position: relative;
+  will-change: transform, opacity;
+}
+
+.input-bar.slide-down {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 4rem !important;         
+  width: 100% !important;
+  transform: none !important;
+  pointer-events: none;
+  z-index: 9999;
+
+  animation: flyDown 0.1s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+}
+
+@keyframes flyDown {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(160vh);
+    opacity: 0;
+  }
+}
