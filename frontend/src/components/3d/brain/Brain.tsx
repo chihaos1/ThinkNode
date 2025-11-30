@@ -6,7 +6,7 @@ import * as THREE from "three"
 
 
 interface BrainProps {
-  mode: "idle" | "thinking"
+  mode: "idle" | "thinking" | "exploring"
 }
 
 export default function Brain({ mode }: BrainProps) {
@@ -48,9 +48,8 @@ export default function Brain({ mode }: BrainProps) {
   useFrame((state, delta) => {
     if (mode === "thinking" && brainRef.current) {
       brainRef.current.rotation.y += delta * 10 
-      // brainRef.current.rotation.x += delta * 1
     }
   })
 
-  return <primitive ref={brainRef} object={scene} scale={3} position={[0, 0, 0]} />
+  return <primitive ref={brainRef} object={scene} scale={2} position={[0, 0, 0]} />
 }

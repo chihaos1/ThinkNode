@@ -2,7 +2,7 @@ import { useRef } from "react"
 import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 
-export default function Nodes() {
+export default function Synapse() {
   const count = 150
   const positions = new Float32Array(count * 3)
 
@@ -11,7 +11,7 @@ export default function Nodes() {
     const phi = Math.acos(Math.random() * 2 - 1)
 
     const brainScale = 1.5
-    const r = (2.2 + Math.random() * 0.7) * brainScale
+    const r = (1.4 + Math.random() * 0.7) * brainScale
 
     positions[i * 3]     = r * Math.sin(phi) * Math.cos(theta)
     positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta)

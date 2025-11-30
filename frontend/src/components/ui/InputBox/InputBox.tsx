@@ -3,7 +3,7 @@ import "./InputBox.css"   // ← create this file
 
 interface InputBoxProps {
   onSubmit: (prompt: string) => void
-  mode: "idle" | "thinking"
+  mode: "idle" | "thinking" | "exploring"
 }
 
 export default function InputBox({ onSubmit, mode }: InputBoxProps) {

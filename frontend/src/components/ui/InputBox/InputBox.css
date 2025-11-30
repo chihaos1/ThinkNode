@@ -6,6 +6,8 @@
 }
 
 .input-bar {
+  position: absolute;
+  top: 75vh;
   max-width: 800px;
   width: 100%;
   margin: 0 auto;
@@ -23,6 +25,7 @@
     0 4px 12px rgba(0, 0, 0, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 5;
 }
 
 .input-bar:hover {
@@ -95,7 +98,7 @@
   pointer-events: none;
   z-index: 9999;
 
-  animation: flyDown 0.1s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+  animation: flyDown 0s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
 }
 
 @keyframes flyDown {
