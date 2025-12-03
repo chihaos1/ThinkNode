@@ -1,11 +1,9 @@
-
 @font-face {
   font-family: 'GTWalsheimUltraBoldOblique';
   src: url('./assets/fonts/GTWalsheimUltraBoldOblique.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
-
 
 .node-label {
     font-family: 'GTWalsheimUltraBoldOblique', sans-serif;

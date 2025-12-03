@@ -15,12 +15,29 @@ function App() {
   const [mode, setMode] = useState<"idle" | "thinking" | "exploring">("idle")
   const [selectedNode, setSelectedNode] = useState<nodeDetail | null>(null)
   
-  const handleSubmit = (prompt: string) => {
+  const handleSubmit = async (prompt: string) => {
     console.log(prompt)
     setMode("thinking")
-    setTimeout(() => {
-      setMode("exploring")
-    }, 3000)
+
+    try {
+      const response = await fetch("http://127.0.0.1:8003/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({"prompt": prompt})
+      })
+      const data = await response.json()
+      console.log(data)
+    } catch (error) {
+      setMode("idle")
+      alert("Failed to get response from Claude. Please try again.")
+    }
+
+    setMode("exploring")
+    // setTimeout(() => {
+    //   setMode("exploring")
+    // }, 3000)
   }
 
   // Node Select and Deselect
@@ -53,7 +70,7 @@ function App() {
           <div className={`canvas-wrapper ${selectedNode ? "shrink" : ""}`}>
             <Canvas 
               onPointerMissed={handleNodeDeselect}
-              camera={{ position: [10, 0, 10], fov: 40}}
+              camera={{ position: [10, 0, 10], fov: 40 }}
             >
               <group scale={1.1}>
                 <Scene mode={mode} selectedNode={selectedNode} />
