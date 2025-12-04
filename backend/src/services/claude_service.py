@@ -11,9 +11,9 @@ async def ask_claude(prompt: str) -> str:
         response = client.messages.create(
             model = settings.CLAUDE_MODEL,
             max_tokens = settings.CLAUDE_MAX_TOKENS,
+            system = 
             messages = [{
-                "role": "user",
-                "content": prompt
+                "role": "user", "content": prompt
             }]
         )
         return response.content[0].text

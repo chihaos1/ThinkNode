@@ -15,6 +15,7 @@ function App() {
   const [mode, setMode] = useState<"idle" | "thinking" | "exploring">("idle")
   const [selectedNode, setSelectedNode] = useState<nodeDetail | null>(null)
   
+  // Prompt Passed to Backend
   const handleSubmit = async (prompt: string) => {
     console.log(prompt)
     setMode("thinking")
@@ -27,17 +28,21 @@ function App() {
         },
         body: JSON.stringify({"prompt": prompt})
       })
+      
+      if (!response.ok) {
+        throw new Error (`HTTP ERROR: ${response.status}`)
+      }
       const data = await response.json()
       console.log(data)
+      setMode("exploring")
+
     } catch (error) {
+      
       setMode("idle")
-      alert("Failed to get response from Claude. Please try again.")
+      const errorMessage = error instanceof Error ? error.message : "Failed to get response. Please try again"
+      alert(errorMessage)
     }
 
-    setMode("exploring")
-    // setTimeout(() => {
-    //   setMode("exploring")
-    // }, 3000)
   }
 
   // Node Select and Deselect
