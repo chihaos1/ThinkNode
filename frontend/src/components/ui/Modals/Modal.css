@@ -56,20 +56,33 @@
 }
 
 .tab.active {
-  color: #ff0000;
+  color: #705d42;
+}
+
+.auth-form-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .auth-form {
-    padding: 2rem
+    width: 100%;
+    padding: 2rem 2rem 0 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .auth-form h2 {
+    margin-top: 1rem;
     text-align: center;
     font-family: "GTWalsheimUltraBoldOblique";
 }
 
 .form-group {
-    margin: 1rem;
+    margin: 0.75rem;
+    width: 100%;
 }
 
 .form-group label {
@@ -79,15 +92,44 @@
 }
 
 .form-group input {
-    height: 1.8rem;
+    height: 2rem;
     width: 100%;
     padding-left: 0.3rem;
     background: none;
-    border: 0.15rem solid #705d4287;
-    
+    border: 0.10rem solid #705d4287;
+    font-family: "GTWalsheimLight";
 }
 
 .form-group input:focus {
     outline: none;
-    
 }
+
+.submit-btn {
+    text-align: center;
+    width: 100%;
+    padding: 0.5rem;
+    background-color: #705d42;
+    border: 0.10rem solid #705d4287;
+    cursor: pointer;
+    font-family: "GTWalsheimUltraBoldOblique";
+}
+
+.separator-line {
+  border: none;
+  height: 1px; 
+  width: 100%;
+  background-color: #705d4287;
+  margin: 2rem auto; 
+}
+
+.oauth-btn-wrapper {
+    padding: 0 2rem 0 2rem;
+    width: 100%;
+}
+
+.oauth-btn-google {
+    width: 100%;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
