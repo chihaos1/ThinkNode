@@ -1,0 +1,58 @@
+.navbar {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  flex-shrink: 0;
+  height: 5vh;
+  padding: 1rem 0;
+  background-color: #1a1a1a;
+  transition: transform 0.8s ease-out;
+}
+
+.navbar.slide-down-enter {
+  animation: slideDownFromTop 0.25s forwards;
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  list-style: none;
+  gap: 2.5rem;
+  padding-right: 3rem;
+  font-family: 'GTWalsheimUltraBoldOblique', sans-serif;
+  color: #C5C2A8;
+  transition: transform 0.2s ease-in-out
+}
+
+.nav-links li:hover {
+  cursor: pointer;
+  transform: scale(0.95);
+}
+
+.signup {
+  padding: 0.5vh 12px;
+  background-color: #ff0000;
+  color: black;
+  border-radius: 20px;
+}
+
+@keyframes slideDownFromTop {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.navbar.slide-up {
+  animation: slideUp 0.8s ease-out forwards;
+}
+
+@keyframes slideUp {
+  to {
+    transform: translateY(-100vh); 
+    opacity: 0;
+  }
+}

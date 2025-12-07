@@ -20,6 +20,6 @@ class Settings(BaseSettings):
     # Claude Settings
     CLAUDE_API_KEY: str = os.getenv("CLAUDE_API_KEY")
     CLAUDE_MODEL: str = "claude-sonnet-4-20250514"
-    CLAUDE_MAX_TOKENS: int = 4000
+    CLAUDE_MAX_TOKENS: int = 8000
 
 settings: Settings = Settings()

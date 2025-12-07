@@ -2,6 +2,7 @@ import { useRef, useEffect, useState, useMemo } from "react"
 import { useFrame, useThree } from "@react-three/fiber"
 import { OrbitControls, Float, Environment } from "@react-three/drei"
 import { EffectComposer, Bloom } from "@react-three/postprocessing"
+import type { GraphResponse, GraphNode, GraphEdge } from "../../models/Graph"
 import * as THREE from "three"
 import Brain from "./brain/Brain"
 import Neurons from "./brain/Neurons"
@@ -16,10 +17,11 @@ type nodeDetail = {
 
 interface SceneProps {
   mode: "idle" | "thinking" | "exploring"
+  nodeData: GraphResponse | null
   selectedNode: nodeDetail | null
 }
 
-export default function Scene({ mode, selectedNode }: SceneProps) {
+export default function Scene({ mode, nodeData, selectedNode }: SceneProps) {
 
     const { camera } = useThree()
     const controlsRef = useRef<any>(null)
@@ -62,24 +64,43 @@ export default function Scene({ mode, selectedNode }: SceneProps) {
                         <Float speed={1.5} rotationIntensity={0.6} floatIntensity={0.8}>
                             <Brain mode={mode}/>
                             {/* <Tooltip /> */}
-                            
                         </Float>
                         <Neurons />
                     </>
                 )
             }
             {
-                mode === "exploring" && (
+                mode === "exploring" && nodeData && (
                     <>
-                        <Node id="1" position={[0,0,1]} label="REACT" isSelected={selectedNode?.id === "1"}/>
-                        <Node id="2" position={[0,2,2]} label="Typescript" isSelected={selectedNode?.id === "2"}/>
-                        <Node id="3" position={[0,4,5]} label="Function" isSelected={selectedNode?.id === "3"}/>
-                        <Node id="4" position={[0,1,3]} label="Typescript" isSelected={selectedNode?.id === "4"}/>
+						{/* Render Nodes */}
+						{
+							nodeData.nodes.map((node: GraphNode) => {
+                // Check and Change Color for Root Node
+                const isRoot = node.x === 0 && node.y === 0 && node.z === 0
+                const nodeColor = isRoot ? "#ff0000" : "#705d42"
+                return (
+                  <Node 
+                    key={node.node_id}
+                    id={node.node_id.toString()} 
+                    position={[node.x, node.y, node.z]} 
+                    label={node.label} 
+                    description={node.description}
+                    isSelected={selectedNode?.id === node.node_id.toString()}
+                    color={nodeColor}
+                  />)
+              })
+						}
 
-                        <Edge start={[0, 0, 1]} end={[0, 2, 2]} />  
-                        <Edge start={[0, 2, 2]} end={[0, 4, 5]} />  
-                        <Edge start={[0, 0, 1]} end={[0, 1, 3]} /> 
-
+						{/* Render Edges */}
+						{
+							nodeData.edges.map((edge: GraphEdge, index: number) => (
+								<Edge 
+									key={index}
+									start={edge.source} 
+									end={edge.target} 
+								/>
+							))
+						}
                     </>
                 )
             }
@@ -106,3 +127,20 @@ export default function Scene({ mode, selectedNode }: SceneProps) {
         </>
     )
 }
+
+
+// {
+//                 mode === "exploring" && nodeData && (
+//                     <>
+//                         <Node id="1" position={[0,0,1]} label="REACT" isSelected={selectedNode?.id === "1"}/>
+//                         <Node id="2" position={[0,2,2]} label="Typescript" isSelected={selectedNode?.id === "2"}/>
+//                         <Node id="3" position={[0,4,5]} label="Function" isSelected={selectedNode?.id === "3"}/>
+//                         <Node id="4" position={[0,1,3]} label="Typescript" isSelected={selectedNode?.id === "4"}/>
+
+//                         <Edge start={[0, 0, 1]} end={[0, 2, 2]} />  
+//                         <Edge start={[0, 2, 2]} end={[0, 4, 5]} />  
+//                         <Edge start={[0, 0, 1]} end={[0, 1, 3]} /> 
+
+//                     </>
+//                 )
+//             }

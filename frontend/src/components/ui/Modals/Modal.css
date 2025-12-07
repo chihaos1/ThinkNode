@@ -1,0 +1,93 @@
+@font-face {
+  font-family: 'GTWalsheimUltraBoldOblique';
+  src: url('./assets/fonts/GTWalsheimUltraBoldOblique.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'GTWalsheimLight';
+  src: url('./assets/fonts/GTWalsheimLight.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;   
+    height: 100%;
+    pointer-events: none; /* Allows to Click Through the Element */
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+    width: 30rem; 
+    height: 40rem;
+    padding: 1rem;
+    background-color: #c5c2ab;
+    border: 0.2rem solid #705d425b;
+    border-radius: 20px;
+    box-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.1),      
+        0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.tab-container {
+    display: flex;
+}
+
+.tab {
+    flex: 1;
+    background: none;
+    border: none;
+    font-family: "GTWalsheimUltraBoldOblique";
+}
+
+.tab:hover {
+    cursor: pointer
+}
+
+.tab.active {
+  color: #ff0000;
+}
+
+.auth-form {
+    padding: 2rem
+}
+
+.auth-form h2 {
+    text-align: center;
+    font-family: "GTWalsheimUltraBoldOblique";
+}
+
+.form-group {
+    margin: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-family: "GTWalsheimLight";
+}
+
+.form-group input {
+    height: 1.8rem;
+    width: 100%;
+    padding-left: 0.3rem;
+    background: none;
+    border: 0.15rem solid #705d4287;
+    
+}
+
+.form-group input:focus {
+    outline: none;
+    
+}

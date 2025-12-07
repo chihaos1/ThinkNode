@@ -32,40 +32,6 @@ html, body {
   background: #C5C2A8
 }
 
-
-/* ---------- NAVBAR ---------- */
-.navbar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-  height: 5vh;
-  padding: 1rem 0;
-  background-color: #1a1a1a;
-  transition: transform 0.8s ease-out;
-}
-
-.navbar.slide-down-enter {
-  animation: slideDownFromTop 0.25s forwards;
-}
-
-.nav-links {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  list-style: none;
-  gap: 2rem;
-}
-
-@keyframes slideDownFromTop {
-  from {
-    transform: translateY(-100%);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-
 /* ---------- MAIN SECTION ---------- */
 
 .main-section {
@@ -107,7 +73,6 @@ h1 {
   transition: transform 0.8s ease-out;            
 }
 
-.navbar.slide-up,
 h1.slide-up {
   animation: slideUp 0.8s ease-out forwards;
 }
@@ -138,11 +103,10 @@ h1.slide-up {
   transform: translateX(0);
   display: flex;
   justify-content: left;
-
 } 
 
 .node-panel-content {
-  background-color: #705d4228;
+  background-color: #c5c2ab;
   border: 0.2rem solid #705d425b;
   border-radius: 20px;
   box-shadow: 
