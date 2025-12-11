@@ -6,7 +6,7 @@ import ScrollWheel from "../../../assets/icons/ScrollWheel.png";
 export default function ControlsGuide() {
     return (
         <div className="controls-guide">
-            <h4>Controls</h4>
+            <h3>Controls</h3>
             <div className="control-item">
                 <span className="control-icon">
                     <img 

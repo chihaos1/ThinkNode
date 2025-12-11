@@ -1,0 +1,42 @@
+@font-face {
+  font-family: 'GTWalsheimLight';
+  src: url('./assets/fonts/GTWalsheimLight.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.user-guide {
+    position: fixed;
+    padding: 1rem;
+    top: 6rem;
+    right: 2rem;
+    width: 20%;
+    background-color: #ff00008c;
+    border-radius: 20px;
+    border: 0.2rem solid #ff000055;
+    box-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.1),       
+        0 8px 15px rgba(0, 0, 0, 0.1);
+    font-family: 'GTWalsheimUltraBoldOblique';
+    overflow: hidden;
+}
+
+.user-guide-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.user-guide.collapsed {
+    height: 3.5rem;
+}
+
+.user-guide h3 {
+    margin-bottom: 1rem
+}
+
+.user-guide p {
+    margin-bottom: 1rem;
+    font-family: "GTWalsheimLight";
+}

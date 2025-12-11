@@ -146,6 +146,8 @@ h1.slide-up {
   justify-content: center;
   align-items: center;
   background-color: #1a1a1a;
+  color: #C5C2A8;
+  font-family: 'GTWalsheimLight';
   transform: translateY(0);
   transition: transform 0.8s ease-out;
 }

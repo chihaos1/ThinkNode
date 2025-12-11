@@ -1,12 +1,14 @@
+import type { User } from "@supabase/supabase-js"
 import "./NavBar.css"
 
 interface NavBarProps {
     mode: "idle" | "thinking" | "exploring"
+    user: User | null
     onLoginClick: () => void
     onSignupClick: () => void
 }
 
-export default function NavBar({ mode, onLoginClick, onSignupClick }: NavBarProps) {
+export default function NavBar({ mode, user, onLoginClick, onSignupClick }: NavBarProps) {
 
     return (
         <nav className={`navbar ${mode === "thinking" ? "slide-up": mode === "exploring" ? "slide-down-enter": ""}`}>

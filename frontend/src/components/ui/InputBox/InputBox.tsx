@@ -25,7 +25,7 @@ export default function InputBox({ onSubmit, mode }: InputBoxProps) {
         onChange={(e) => setPrompt(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
       />
-      <button onClick={() => console.log("→", prompt)}>
+      <button onClick={() => handleSubmit()}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
           <path d="M5 12h14M12 5l7 7-7 7" />
         </svg>

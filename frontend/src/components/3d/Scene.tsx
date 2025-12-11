@@ -121,26 +121,9 @@ export default function Scene({ mode, nodeData, selectedNode }: SceneProps) {
                     luminanceThreshold={0.1}   
                 />
             </EffectComposer>
-
+            {/* <axesHelper args={[1]} /> */}
             <Environment preset="night" />
 
         </>
     )
 }
-
-
-// {
-//                 mode === "exploring" && nodeData && (
-//                     <>
-//                         <Node id="1" position={[0,0,1]} label="REACT" isSelected={selectedNode?.id === "1"}/>
-//                         <Node id="2" position={[0,2,2]} label="Typescript" isSelected={selectedNode?.id === "2"}/>
-//                         <Node id="3" position={[0,4,5]} label="Function" isSelected={selectedNode?.id === "3"}/>
-//                         <Node id="4" position={[0,1,3]} label="Typescript" isSelected={selectedNode?.id === "4"}/>
-
-//                         <Edge start={[0, 0, 1]} end={[0, 2, 2]} />  
-//                         <Edge start={[0, 2, 2]} end={[0, 4, 5]} />  
-//                         <Edge start={[0, 0, 1]} end={[0, 1, 3]} /> 
-
-//                     </>
-//                 )
-//             }

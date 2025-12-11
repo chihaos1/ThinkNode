@@ -37,7 +37,7 @@
     border-radius: 20px;
     box-shadow: 
         0 4px 8px rgba(0, 0, 0, 0.1),      
-        0 8px 15px rgba(0, 0, 0, 0.1);
+        0 8px 15px rgba(0, 0, 0, 0.1);  
 }
 
 .tab-container {
@@ -60,6 +60,7 @@
 }
 
 .auth-form-wrapper {
+    height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -104,14 +105,22 @@
     outline: none;
 }
 
+.form-group input:valid {
+    background-color: #c5c2ab;
+}
+
 .submit-btn {
     text-align: center;
     width: 100%;
     padding: 0.5rem;
-    background-color: #705d42;
+    background-color: #836d4fb4;
     border: 0.10rem solid #705d4287;
     cursor: pointer;
     font-family: "GTWalsheimUltraBoldOblique";
+}
+
+.submit-btn:hover {
+    background-color: #836d4f76;
 }
 
 .separator-line {
@@ -119,17 +128,24 @@
   height: 1px; 
   width: 100%;
   background-color: #705d4287;
-  margin: 2rem auto; 
+  margin: 2rem 2rem 1rem 2rem; 
 }
 
 .oauth-btn-wrapper {
     padding: 0 2rem 0 2rem;
+
     width: 100%;
+    font-family: "GTWalsheimLight";
 }
 
 .oauth-btn-google {
+    margin: 1rem auto;
     width: 100%;
     padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    font-family: "GTWalsheimLight";
     cursor: pointer;
 }
-
