@@ -1,12 +1,20 @@
+@font-face {
+  font-family: 'GTWalsheimLight';
+  src: url('./assets/fonts/GTWalsheimLight.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .navbar {
   display: flex;
-  justify-content: end;
+  justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
   height: 5vh;
   padding: 1rem 0;
   background-color: #1a1a1a;
   transition: transform 0.8s ease-out;
+  z-index: 2000;
 }
 
 .navbar.slide-down-enter {
@@ -19,20 +27,28 @@
   align-items: center;
   list-style: none;
   gap: 2.5rem;
-  padding-right: 3rem;
+  padding-right: 2rem;
   font-family: 'GTWalsheimUltraBoldOblique', sans-serif;
   color: #C5C2A8;
   transition: transform 0.2s ease-in-out
 }
 
-.nav-links li:hover {
-  cursor: pointer;
-  transform: scale(0.95);
+.nav-links > li {
+  margin-top: 0.4rem;
+}
+
+.nav-links > .login:hover,
+.nav-links > .signup:hover,
+.user-profile img:hover,
+.mindmap-list img:hover,
+.navbar-goback img:hover {
+    cursor: pointer;
+    transform: scale(0.9);
 }
 
 .signup {
   padding: 0.5vh 12px;
-  background-color: #ff0000;
+  background-color: #C5C2A8;
   color: black;
   border-radius: 20px;
 }
@@ -55,4 +71,87 @@
     transform: translateY(-100vh); 
     opacity: 0;
   }
+}
+
+.navbar-goback {
+  margin-left: 2rem;
+  cursor: pointer;
+  margin-top: 0.4rem;
+}
+
+.user-profile,
+.mindmap-list  {
+  position: relative;
+}
+
+.user-profile img,
+.mindmap-list img,
+.navbar-goback img {
+    width: 2rem;   
+    height: 2rem;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 1.5rem);
+  right: 0;
+  padding: 0.7rem;
+  background: rgba(220, 225, 230, 0.15);  
+  backdrop-filter: blur(28px);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.18),      
+    0 4px 12px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1001;
+  color: #000000;
+  font-family: 'GTWalsheimLight';
+}
+
+.dropdown-email {
+  margin-bottom: 0.5rem;
+}
+
+.dropdown-logout {
+  padding: 0.25rem;
+  background: #1a1a1a;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-family: 'GTWalsheimLight';
+}
+
+.dropdown-logout:hover {
+  transform: scale(0.9);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.mindmap-title {
+  margin-left: 2rem;  
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-family: 'GTWalsheimUltraBoldOblique';
+  color: #c5c2ab;
+}
+
+.mindmap-title input {
+  margin-top: 0.4rem;
+  border: none;
+  border-bottom: 1px dashed #c5c2ab;;
+  background: none;
+  color: #c5c2ab;
+  text-align: center;
+  font-family: 'GTWalsheimLight';
+  font-size: 1.5rem
+}
+
+.mindmap-title input::placeholder {
+    color: #c5c2ab;
+    transition: opacity 0.1s ease-in-out;
+}
+
+.mindmap-title input:focus {
+    outline: none;
 }

@@ -1,0 +1,66 @@
+@font-face {
+  font-family: 'GTWalsheimUltraBoldOblique';
+  src: url('./assets/fonts/GTWalsheimUltraBoldOblique.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'GTWalsheimLight';
+  src: url('./assets/fonts/GTWalsheimLight.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;   
+    height: 100%;
+    pointer-events: none; /* Allows to Click Through the Element */
+}
+
+.modal-content h2 {
+    margin-top: 1rem;
+    text-align: center;
+    font-family: "GTWalsheimUltraBoldOblique";
+}
+
+.mindmap-wrapper {
+    margin-top: 2rem;
+    font-family: 'GTWalsheimLight';
+}
+
+.mindmap-menu-list {
+    list-style: none;
+    cursor: pointer;
+}
+
+.mindmap-menu-list li {
+  height: 4rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid black;
+}
+
+.mindmap-menu-list li:hover {
+  background: #00000011;  
+}
+
+.item-title {
+    display: block;
+}
+
+.delete-icon {
+    width: 1.5rem;   
+    height: 1.5rem;
+}
+
+.delete-icon:hover {
+    transform: rotate(20deg);
+}

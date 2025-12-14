@@ -3,10 +3,10 @@ import "./UserGuide.css"
 
 export default function UserGuide() {
     
-    const [isExpanded, setIsExpanded] = useState<boolean>(false)
+    const [isExpanded, setIsExpanded] = useState<boolean>(true)
 
     const toggleExpanded = () => {
-        console.log(isExpanded)
+
         if (!isExpanded) {
             setIsExpanded(true)
         }
@@ -25,7 +25,7 @@ export default function UserGuide() {
             {
                 isExpanded && (
                     <div className="user-guide-content">
-                        <strong>1. Ask a Question</strong>
+                        <strong className="user-guide-subheader">1. Ask a Question</strong>
                         <p>
                             Type any topic you want to learn or explore—from "How to learn guitar" 
                             to "Explain quantum physics."

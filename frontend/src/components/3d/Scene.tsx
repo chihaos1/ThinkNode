@@ -26,6 +26,39 @@ export default function Scene({ mode, nodeData, selectedNode }: SceneProps) {
     const { camera } = useThree()
     const controlsRef = useRef<any>(null)
 
+    const handleNodeDragStart = () => {
+      if (controlsRef.current) {
+        controlsRef.current.enabled = false
+      }
+    }
+
+    const handleNodeDragEnd = () => {
+      if (controlsRef.current) {
+        controlsRef.current.enabled = true
+      }
+    }
+
+    // Reset Camera When Returning to Idle Mode
+
+    useEffect(() => {
+      if (mode === "idle" && controlsRef.current) {
+        const defaultCameraPos = new THREE.Vector3(10, 0, 10)
+        const defaultTarget = new THREE.Vector3(0, 0, 0)
+
+        const animate = () => {
+          camera.position.lerp(defaultCameraPos, 1)
+          controlsRef.current.target.lerp(defaultTarget, 1)
+          controlsRef.current.update()
+
+          if (camera.position.distanceTo(defaultCameraPos) > 0.1) {
+            requestAnimationFrame(animate)
+          }
+        }
+        
+        animate()
+      }
+    }, [mode, camera])
+
     // Focus Camera on the Selected Node
     useEffect(() => {
       if (selectedNode && controlsRef.current) {
@@ -63,7 +96,6 @@ export default function Scene({ mode, nodeData, selectedNode }: SceneProps) {
                     <>
                         <Float speed={1.5} rotationIntensity={0.6} floatIntensity={0.8}>
                             <Brain mode={mode}/>
-                            {/* <Tooltip /> */}
                         </Float>
                         <Neurons />
                     </>
@@ -87,6 +119,8 @@ export default function Scene({ mode, nodeData, selectedNode }: SceneProps) {
                     description={node.description}
                     isSelected={selectedNode?.id === node.node_id.toString()}
                     color={nodeColor}
+                    onDragStart={handleNodeDragStart}   
+                    onDragEnd={handleNodeDragEnd}  
                   />)
               })
 						}

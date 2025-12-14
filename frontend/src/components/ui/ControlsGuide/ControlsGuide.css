@@ -13,17 +13,17 @@
 }
 
 .controls-guide {
-    font-family: 'GTWalsheimUltraBoldOblique';
-    background-color: #ff00008c;
-    border: 0.2rem solid #ff000055;
+    position: fixed;
+    padding: 1rem;
+    bottom: 6rem;
+    right: 2rem;
     border-radius: 20px;
     box-shadow: 
         0 4px 8px rgba(0, 0, 0, 0.1),       
         0 8px 15px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    padding: 1rem;
-    top: 6rem;
-    right: 2rem;
+    background-color: #3b3123;
+    color: #C5C2A8;
+    font-family: 'GTWalsheimUltraBoldOblique';
 }
 
 .controls-guide h3 {
@@ -39,6 +39,7 @@
 .control-icon img {
     height: 1.2rem;
     width: 1.2rem;
+    
 }
 
 .control-text strong {

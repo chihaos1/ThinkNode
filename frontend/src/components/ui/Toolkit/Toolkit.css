@@ -1,0 +1,28 @@
+.toolkit {
+    position: fixed;
+    height: 10rem;
+    width: 4.5rem;
+    left: 2rem;
+    padding: 1rem;
+    display: flex;
+    justify-content: start; 
+    align-items: flex-start;
+    flex-direction: column; 
+    background-color: #3b3123;
+    border-radius: 20px;
+    box-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.1),       
+        0 8px 15px rgba(0, 0, 0, 0.1);
+    gap: 0.5rem;
+    color: #C5C2A8;
+}
+
+.toolkit img {
+    width: 2.5rem;   
+    height: 2.5rem;
+    cursor: pointer;
+}
+
+.toolkit img:hover {
+    transform: scale(0.90);
+}

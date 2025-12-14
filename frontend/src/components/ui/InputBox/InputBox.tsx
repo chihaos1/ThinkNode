@@ -7,7 +7,8 @@ interface InputBoxProps {
 }
 
 export default function InputBox({ onSubmit, mode }: InputBoxProps) {
-  const [prompt, setPrompt] = useState("")
+  
+  const [prompt, setPrompt] = useState<string>("")
 
   const handleSubmit = () => {
     if (prompt.trim()) {

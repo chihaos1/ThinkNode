@@ -69,7 +69,7 @@ h1 {
   transform: scaleX(1.25);  
   position: absolute;           
   display: inline-block;  
-  top: 8vh;
+  top: 7vh;
   transition: transform 0.8s ease-out;            
 }
 
@@ -119,13 +119,34 @@ h1.slide-up {
   flex-direction: column;
 }
 
-.node-panel-content h2 {
-  font-family: 'GTWalsheimUltraBoldOblique', sans-serif;
-  margin-bottom: 1rem;
-}
-
 .node-panel-content p {
   font-family: 'GTWalsheimLight', sans-serif;
+}
+
+.node-panel-label {
+  height: 2rem;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  background: none;
+  border: 1.5px solid #705d425b;
+  border-radius: 20px;
+  font-family: 'GTWalsheimUltraBoldOblique', sans-serif;
+  font-size: x-large;
+}
+
+.node-panel-label:focus,
+.node-panel-description:focus {
+  outline: none;
+}
+
+.node-panel-description {
+  height: 50%;
+  padding: 1rem;
+  background: none;
+  border: 1.5px solid #705d425b;
+  border-radius: 20px;
+  font-family: 'GTWalsheimLight', sans-serif;
+  font-size: medium;
 }
 
 /* ---------- FOOTER ---------- */

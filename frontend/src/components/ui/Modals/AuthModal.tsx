@@ -1,13 +1,13 @@
 import { useState } from "react"
 import { supabase } from "../../../util/supabase-client"
-import "./Modal.css"
+import "./AuthModal.css"
 
 interface ModalProps {
     close: () => void
     defaultTab: "login" | "signup" 
 }
 
-export default function Modal({close, defaultTab}: ModalProps) {
+export default function AuthModal({close, defaultTab}: ModalProps) {
     
     const [activeTab, setActiveTab] = useState<"login" | "signup">(defaultTab)
     const [loading, setLoading] = useState<boolean>(false)

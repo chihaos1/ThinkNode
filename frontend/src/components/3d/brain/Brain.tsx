@@ -19,7 +19,7 @@ export default function Brain({ mode }: BrainProps) {
         const mesh = child as THREE.Mesh
         
         // Main edges - main structure lines
-        const edges = new THREE.EdgesGeometry(mesh.geometry, 25)
+        const edges = new THREE.EdgesGeometry(mesh.geometry, 15)
         const mainMaterial = new THREE.LineBasicMaterial({
           color: "#705d42", 
           transparent: true,
@@ -28,7 +28,7 @@ export default function Brain({ mode }: BrainProps) {
         const mainLines = new THREE.LineSegments(edges, mainMaterial)
         
         // Detail edges - sparser, shows major crevices only
-        const detailEdges = new THREE.EdgesGeometry(mesh.geometry, 18) // More sparse
+        const detailEdges = new THREE.EdgesGeometry(mesh.geometry, 10) // More sparse
         const detailMaterial = new THREE.LineBasicMaterial({
           color: "#3b3123",     
           transparent: true,
