@@ -14,7 +14,7 @@ export default function Edge({ start, end }: EdgeProps) {
         const startVec = new THREE.Vector3(...start)
         const endVec = new THREE.Vector3(...end)
         const direction = new THREE.Vector3().subVectors(endVec, startVec)
-        direction.normalize() // Normalize the lenghth (makes it 1)
+        direction.normalize() // Normalize the length (makes it 1)
 
         const newStart = startVec.clone().add(direction.clone().multiplyScalar(NODE_RADIUS))
         const newEnd = endVec.clone().sub(direction.clone().multiplyScalar(NODE_RADIUS))

@@ -9,4 +9,5 @@
     font-family: 'GTWalsheimUltraBoldOblique', sans-serif;
     font-stretch: 200%;                 
     letter-spacing: 0.06em;
+    pointer-events: none;
 }

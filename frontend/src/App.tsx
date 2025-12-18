@@ -9,9 +9,10 @@ import MindMapModal from "./components/ui/Modals/MindMapModal"
 import Toolkit from "./components/ui/Toolkit/Toolkit"
 import ControlsGuide from "./components/ui/ControlsGuide/ControlsGuide"
 import UserGuide from "./components/ui/UserGuide/UserGuide"
-import type { GraphNode, GraphResponse } from "./models/Graph"
+import type { Coordinates, GraphNode, GraphResponse } from "./models/Graph"
 import type { MindMapItem } from "./models/MindMap"
 import type { User } from "@supabase/supabase-js"
+import * as THREE from "three"
 import './App.css'
 
 type nodeDetail = {
@@ -57,7 +58,7 @@ function App() {
   useEffect(() => {
     fetchSession()
 
-    const { data: authListener} = supabase.auth.onAuthStateChange(
+    const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setUser(session?.user ?? null)
       }
@@ -142,7 +143,9 @@ function App() {
         throw new Error (`HTTP ERROR: ${response.status}`)
       }
       const data = await response.json()
+
       setResponse(data)
+      setTitle("Untitled Mind Map")
       setMode("exploring")
 
     } catch (error) {
@@ -151,6 +154,47 @@ function App() {
       const errorMessage = error instanceof Error ? error.message : "Failed to get response. Please try again"
       alert(errorMessage)
     }
+  }
+
+  // ---------- Update Node Position ----------
+
+  const handleUpdateNodePosition = (nodeId: string, newPos: THREE.Vector3) => {
+    setResponse(prev => {
+      if (!prev) return prev
+
+      // Get the Moved Node
+      const movedNode = prev.nodes.find(n => n.node_id.toString() === nodeId)
+      
+      if (!movedNode) return prev
+
+      // Get Old Coordinates
+      const oldCoords: Coordinates = [movedNode.x, movedNode.y, movedNode.z]
+      console.log("OLD COORDS:", oldCoords)
+      // Get New Coordinates
+      const newCoords: Coordinates = [newPos.x, newPos.y, newPos.z]
+      console.log("NEW COORDS:", newCoords)
+      return {
+        ...prev,
+
+        // Update node positions
+        nodes: prev.nodes.map(node =>
+          node.node_id.toString() === nodeId 
+            ? {...node, x: newPos.x, y: newPos.y, z: newPos.z}
+            : node
+        ),
+        
+        edges: prev.edges.map(edge => {
+          const oldCoordsStr = oldCoords.join(",")
+          const sourceStr  = edge.source.join(",")
+          const targetStr  = edge.target.join(",")
+
+          return {
+            source: sourceStr === oldCoordsStr ? newCoords : edge.source,
+            target: targetStr === oldCoordsStr ? newCoords : edge.target
+          }
+        })
+      }
+    })
   }
 
   // ---------- Node Select and Deselect ----------
@@ -250,6 +294,7 @@ function App() {
   }
 
   // ---------- Load Mind Maps ----------
+  
   const [currentMindMapId, setCurrentMindMapId] = useState<string | null>(null)
 
   useEffect(() => {
@@ -271,7 +316,9 @@ function App() {
         }
 
         if (data) {
-            setResponse({
+          setResponse(null)  
+          
+          setResponse({
               nodes: data.nodes,
               edges: data.edges
             })
@@ -312,7 +359,7 @@ function App() {
               camera={{ position: [10, 0, 10], fov: 40 }}
             >
               <group scale={1.1}>
-                <Scene mode={mode} nodeData={response} selectedNode={selectedNode} />
+                <Scene mode={mode} nodeData={response} updateNodeCoords={handleUpdateNodePosition} selectedNode={selectedNode} currentMindMapId={currentMindMapId} />
               </group>
             </Canvas>
           </div>
@@ -341,10 +388,6 @@ function App() {
                   onChange={(e) => setEditableDescription(e.target.value)}
                   onBlur={handleDescriptionlSubmit}
                 />
-
-                {/* <div className="node-panel-description">
-                  <p>{selectedNode.description}</p>
-                </div> */}
               </div>
             )}
           </div>
