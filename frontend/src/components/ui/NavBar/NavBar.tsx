@@ -1,5 +1,4 @@
 import { supabase } from "../../../util/supabase-client"
-import { useEffect, useState } from "react"
 import userProfileImage from "../../../assets/icons/UserProfile.svg"
 import goBackIcon from "../../../assets/icons/GoBack.svg"
 import MindMapList from "../../../assets/icons/MindMapList.svg"

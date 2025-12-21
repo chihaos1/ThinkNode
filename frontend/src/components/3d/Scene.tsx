@@ -1,6 +1,6 @@
-import { useRef, useEffect, useState, useMemo } from "react"
+import { useRef, useEffect, useState } from "react"
 import { useFrame, useThree } from "@react-three/fiber"
-import { OrbitControls, Float, Environment, DragControls  } from "@react-three/drei"
+import { Billboard, OrbitControls, Float, Environment, DragControls  } from "@react-three/drei"
 import { EffectComposer, Bloom } from "@react-three/postprocessing"
 import type { GraphResponse, GraphNode, GraphEdge } from "../../models/Graph"
 import * as THREE from "three"
@@ -21,20 +21,27 @@ interface SceneProps {
   updateNodeCoords: (nodeId: string, newPos: THREE.Vector3) => void
   selectedNode: nodeDetail | null
   currentMindMapId: string | null
+  addNewNode: (x: number, y: number, z: number) => void
+  addNewLine: ([startNode, endNode]: [GraphNode, GraphNode]) => void
+  deleteItems: (items: {nodes: GraphNode[], edges: GraphEdge[] }) => void
 }
 
 export default function Scene({ mode, 
                                 nodeData, 
                                 updateNodeCoords, 
                                 selectedNode, 
-                                currentMindMapId }: SceneProps) {
+                                currentMindMapId,
+                                addNewNode,
+                                addNewLine,
+                                deleteItems }: SceneProps) {
 
     const { camera, gl } = useThree()
     const controlsRef = useRef<any>(null)
     const nodeGroupRefs = useRef<Map<string, THREE.Group>>(new Map())
     const [draggingNodeId, setDraggingNodeID] = useState<string | null>(null)
+    const [nodeKeys, setNodeKeys] = useState<Map<string, number>>(new Map())
 
-    // Enable and Disable OrbitControl when Dragging
+    // ---------- Enable and Disable OrbitControl when Dragging ---------- 
 
     const handleNodeDragStart = () => {
       if (controlsRef.current) {
@@ -50,7 +57,7 @@ export default function Scene({ mode,
       gl.domElement.style.cursor = "auto"
     }
 
-    // Reset Camera When Returning to Idle Mode
+    // ---------- Reset Camera When Returning to Idle Mode ---------- 
 
     useEffect(() => {
       if (mode === "idle" && controlsRef.current) {
@@ -71,7 +78,7 @@ export default function Scene({ mode,
       }
     }, [mode, camera])
 
-    // Focus Camera on the Selected Node
+    // ---------- Focus Camera on the Selected Node ---------- 
 
     useEffect(() => {
       if (selectedNode && controlsRef.current) {
@@ -97,7 +104,8 @@ export default function Scene({ mode,
       }
     }, [selectedNode, camera])
 
-    // Hovering Effect for Selected Node
+    // ---------- Hovering Effect for Selected Node ---------- 
+
     useFrame(({ clock }) => {
       if (!selectedNode || draggingNodeId) return  
       
@@ -119,14 +127,187 @@ export default function Scene({ mode,
       } 
     )
 
-    const [nodeKeys, setNodeKeys] = useState<Map<string, number>>(new Map())
+    // ---------- Adding New Node from Add.tsx ---------- 
+
+    const [isAddingNode, setIsAddingNode] = useState<boolean>(false)
+
+    useEffect(() => {
+      const handleStartAddingNode = () => {
+        setIsAddingNode(true)
+      }
+      
+      window.addEventListener("startAddingNode", handleStartAddingNode)
+
+      return () => {
+        window.removeEventListener("startAddingNode", handleStartAddingNode)
+      }
+    }, [])
+
+    const handlePlaneClick = (e: any) => {
+      if (!isAddingNode) return
+
+      e.stopPropagation()
+
+      const { x, y, z } = e.point
+      addNewNode(x, y, z) // Passes the Coords for the new node
+      setIsAddingNode(false)
+
+      const canvas = document.querySelector("canvas")
+      if (canvas) {
+        canvas.style.cursor = "default"
+      }
+    }
+
+    // ---------- Adding New Line from Add.tsx ---------- 
+
+    const [isAddingLine, setIsAddingLine] = useState<boolean>(false)
+    const [selectedNodesForLines, setSelectedNodesForLines] = useState<GraphNode[]>([]);
+
+    useEffect(() => {
+      const handleStartAddingLine = () => {
+        setIsAddingLine(true)
+      }
+
+      window.addEventListener("startAddingLine", handleStartAddingLine)
+
+      return () => {
+        window.removeEventListener('startAddingLine', handleStartAddingLine)
+      }
+    }, [])
+
+    const handleAddLine = (node: GraphNode) => {
+      if (!isAddingLine) return;
+
+      if (selectedNodesForLines.some(n => n.node_id === node.node_id)) return;
+
+      const currentSelection = [...selectedNodesForLines, node];
+
+      if (currentSelection.length === 2) {
+        const [node1, node2] = currentSelection;
+
+        const lineExists = nodeData?.edges.some(edge => {
+          const s = edge.source.join(",");
+          const t = edge.target.join(",");
+          const p1 = `${node1.x},${node1.y},${node1.z}`;
+          const p2 = `${node2.x},${node2.y},${node2.z}`;
+
+          return (s === p1 && t === p2) || (s === p2 && t === p1);
+        });
+
+        if (lineExists) {
+          alert("These nodes are already connected!");
+        } else {
+          addNewLine([node1, node2]);
+        }
+
+        setIsAddingLine(false);
+        setSelectedNodesForLines([]);
+        document.querySelector("canvas")!.style.cursor = "default";
+
+      } else {
+        setSelectedNodesForLines(currentSelection);
+      }
+    };
+
+    // ---------- Delete Nodes and Lines ---------- 
+
+    const [isDeleting, setIsDeleting] = useState<boolean>(false)
+    const [itemsToDelete, setItemsToDelete] = useState<{
+        nodes: GraphNode[],
+        edges: GraphEdge[]
+      }>({nodes:[], edges: []});
+
+    useEffect(() => {
+      const handleStartDeletingLine = () => {
+        setIsDeleting(true)
+      }
+
+      window.addEventListener("startDeleting", handleStartDeletingLine)
+
+      return () => {
+        window.removeEventListener('startDeleting', handleStartDeletingLine)
+      }
+    }, [])
+
+    const handleSelectNodeDelete = (node: GraphNode) => { // Add to the Items for Deletion
+      if (!isDeleting) return
+      const nodeId = node.node_id.toString()
+
+      if (itemsToDelete.nodes.some(n => n.node_id.toString() === nodeId)) return
+
+      setItemsToDelete(prev => {
+        return {
+          ...prev,
+          nodes: [...prev.nodes, node]
+        }
+      })
+    }
+
+    const handleSelectLineDelete = (edge: GraphEdge) => { // Add to the Items for Deletion
+      if (!isDeleting) return
+
+      if (itemsToDelete.edges.some(e =>
+          e.source.join(",") === edge.source.join(",") &&
+          e.target.join(",") === edge.target.join(",")
+      )) return
+
+      setItemsToDelete(prev => {
+        return {
+          ...prev,
+          edges: [...prev.edges, edge]
+        }
+      })
+      console.log(itemsToDelete)
+    }
+
+    useEffect(() => { // Listens for Confirm Delete then Delete Item in App.tsx
+      const handleConfirmDelete = () => {
+        deleteItems(itemsToDelete)
+        setIsDeleting(false)
+        setItemsToDelete({nodes:[], edges: []})
+        window.dispatchEvent(new CustomEvent("completedDelete")) // Notifies Toolkit.tsx to close demolish toolkit
+      }
+
+      window.addEventListener("confirmDelete", handleConfirmDelete)
+
+      return () => {
+        window.removeEventListener('confirmDelete', handleConfirmDelete)
+      }
+    }, [itemsToDelete, deleteItems])
+
+    useEffect(() => { // Listens for Cancel Delete
+      const handleCancelDelete = () => {
+        setIsDeleting(false)
+        setItemsToDelete({nodes:[], edges: []})
+      }
+
+      window.addEventListener("cancelDelete", handleCancelDelete)
+
+      return () => {
+        window.removeEventListener('cancelDelete', handleCancelDelete)
+      }
+    }, [])
+    
+
     return (
         <>
             <color attach="background" args={["#050510"]}/>
-            
             <ambientLight intensity={0.4} />
             <pointLight position={[10,10,10]} intensity={1} />
-            
+            {
+              isAddingNode && (
+                <Billboard>
+                  <mesh
+                    onClick={handlePlaneClick}
+                    visible={false}
+                    position={[0,0,0]}
+                  >
+                    <planeGeometry args={[100, 100]} />
+                    <meshBasicMaterial />
+                  </mesh>
+                </Billboard>
+              )
+            }
             {
                 mode !== "exploring" && (
                     <>
@@ -144,25 +325,45 @@ export default function Scene({ mode,
                   {
                     
                     nodeData.nodes.map((node: GraphNode) => {
-                      // Check and Change Color for Root Node
+ 
                       const isRoot = node.x === 0 && node.y === 0 && node.z === 0
                       const nodeColor = isRoot ? "#ff0000" : "#705d42"
                       const nodeId = node.node_id.toString()
 
+                      const isSelectedForLine = selectedNodesForLines.some(
+                        (n) => n.node_id.toString() === nodeId
+                      );
+                      const isSelectedForDelete = itemsToDelete.nodes.some(
+                        (n) => n.node_id.toString() === nodeId
+                      )
+
                       const nodeElement = (
                         <Node 
-                            id={nodeId} 
-                            position={[node.x, node.y, node.z]} 
-                            label={node.label} 
-                            description={node.description}
-                            isSelected={selectedNode?.id === nodeId}
+                            node={node}
                             color={nodeColor}
                             isDragging={draggingNodeId === nodeId}
+                            isAddingNode={isAddingNode}
+                            isAddingLine={isAddingLine}
+                            addLine={handleAddLine}
+                            isDeleting={isDeleting}
+                            deleteObj={handleSelectNodeDelete}
+                            isSelectedForAddLine={isSelectedForLine}
+                            isSelectedForDelete={isSelectedForDelete}
                           />
                       )
 
-                      return isRoot ? (
-                        <group key={`${currentMindMapId}-${node.node_id}`}>
+                      return isRoot || isAddingLine || isDeleting ? (
+                        <group 
+                          key={`${currentMindMapId}-${node.node_id}`}
+                          position={[node.x, node.y, node.z]}
+                          ref={(el) => {
+                              if (el) {
+                                  nodeGroupRefs.current.set(nodeId, el)
+                              } else {
+                                  nodeGroupRefs.current.delete(nodeId)
+                              }
+                          }}
+                        >
                           {nodeElement}
                         </group> 
                       ) : (
@@ -203,7 +404,13 @@ export default function Scene({ mode,
                               } else {
                                 nodeGroupRefs.current.delete(nodeId)
                               }
-                            }}>
+                            }}
+                            onPointerDown={(e) => {
+                              if (selectedNode) {
+                                e.stopPropagation()
+                              }
+                            }}
+                          >
                             {nodeElement}
                           </group> 
                         </DragControls>
@@ -223,19 +430,38 @@ export default function Scene({ mode,
 
                         return connectedSourceCoords !== nodeCoords && connectedTargetCoords !== nodeCoords
                       })
-                      .map((edge: GraphEdge, index: number) => (
-                      <Edge 
-                        key={index}
-                        start={edge.source} 
-                        end={edge.target} 
-                      />
-                    ))
+                      .map((edge: GraphEdge, index: number) => {
+                        const isSelectedForDelete = itemsToDelete.edges.some(e =>
+                          e.source.join(",") === edge.source.join(",") &&
+                          e.target.join(",") === edge.target.join(",")
+                        )
+                        
+                        return (
+                          <group
+                            key={`edge-${edge.source.join(",")}-${edge.target.join(",")}`}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleSelectLineDelete(edge)
+                            }}
+                          >
+                            <Edge 
+                              key={index}
+                              start={edge.source} 
+                              end={edge.target}
+                              isDeleting={isDeleting} 
+                              isSelectedForDelete={isSelectedForDelete}
+                            />
+                          </group>
+                          
+                    )})
                   }
                 </>
                 )
             }
+
             <OrbitControls 
-                ref={controlsRef}                  
+                ref={controlsRef}     
+                enabled={!draggingNodeId}             
                 enablePan={mode === "exploring" && !selectedNode}
                 enableZoom={mode === "exploring"} 
                 autoRotate={mode !== "exploring"} 

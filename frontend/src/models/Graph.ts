@@ -7,6 +7,13 @@ export interface GraphNode {
     z: number
 }
 
+export type nodeDetail = {
+  id: string
+  label: string
+  position: [number, number, number]
+  description: string
+}
+
 export type Coordinates = [number, number, number]
 
 export interface GraphEdge {

@@ -15,6 +15,7 @@
 .controls-guide {
     position: fixed;
     padding: 1rem;
+    width: 18rem;
     bottom: 6rem;
     right: 2rem;
     border-radius: 20px;

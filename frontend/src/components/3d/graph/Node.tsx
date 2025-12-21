@@ -1,68 +1,77 @@
-import { forwardRef, useRef } from "react"
 import { Html } from "@react-three/drei"
-import { useFrame, useThree } from "@react-three/fiber"
+import { useThree } from "@react-three/fiber"
+import type { GraphNode } from "../../../models/Graph"
 import * as THREE from "three"
 import './Node.css'
 
 interface NodeProps {
-    id: string
-    position: [number, number, number]
-    label: string
-    description: string
-    isSelected: boolean
+    node: GraphNode
     color?: string
     isDragging?: boolean
+    isAddingNode?: boolean
+    isAddingLine?: boolean
+    addLine: (node: GraphNode) => void
+    isDeleting?: boolean
+    deleteObj: (node: GraphNode) => void
+    isSelectedForAddLine?: boolean
+    isSelectedForDelete?: boolean
 }
 
-const Node = forwardRef<THREE.Group, NodeProps>(({
-    id,
-    position,
-    label,
-    description,
-    isSelected = false,
-    color = "#705d42",
-    isDragging
-}, ref) => {
+export default function Node({  
+                                node,
+                                color = "#705d42", 
+                                isDragging,
+                                isAddingNode, 
+                                isAddingLine,
+                                addLine,
+                                isDeleting,
+                                deleteObj,
+                                isSelectedForAddLine,
+                                isSelectedForDelete}: NodeProps) {
     
-    const localRef = useRef<THREE.Group>(null)
-    const groupRef = (ref as React.MutableRefObject<THREE.Group> || localRef)
     const { gl } = useThree()
 
+    const id = node.node_id
+    const label = node.label
+    const position = [node.x, node.y, node.z]
+    const description = node.description
+
     // Cursor Changes
+
     const handlePointerOver = () => {
+        if (isAddingLine || isAddingNode || isDeleting) return
         gl.domElement.style.cursor = "pointer"
     }
 
-    // Determine If Click or Drag
+    // Determine If Node should be Clickable
+
     const handleClick = () => {
+        if (isAddingLine) {
+            addLine(node)
+            return
+        }
+
+        if (isDeleting) {
+            deleteObj(node)
+            return
+        }
 
         if (isDragging) {
             return
         }
+        
         dispatchClick() 
     }
 
     const dispatchClick = () => {
+        
         window.dispatchEvent(new CustomEvent("node-clicked", {
             detail: { id, label, position, description }
         }))
     }
 
-    // Hovering Effect for Selected Node
-    // useFrame(({ clock }) => {
-    //     if (groupRef.current && isSelected) {
-    //         const hoverValue = Math.sin(clock.getElapsedTime() * 2) * 0.05
-    //         groupRef.current.position.y = position[1] + hoverValue
-    //     }
-    //     if (groupRef.current && !isSelected && groupRef.current.position.y !== position[1]) {
-    //         groupRef.current.position.y = position[1]
-    //     } 
-    // })
-
     return (
-        <group 
-            ref={groupRef} 
-        >
+        <>
             <mesh 
                 onPointerOver={handlePointerOver}
                 onClick={handleClick} 
@@ -78,17 +87,34 @@ const Node = forwardRef<THREE.Group, NodeProps>(({
                 <edgesGeometry args={[new THREE.SphereGeometry(0.58, 8, 8)]} />
                 <lineBasicMaterial color={color} transparent opacity={0.9} />
             </lineSegments>
+
+            {isAddingLine && (
+                <mesh>
+                <sphereGeometry args={[0.65, 8, 8]} />
+                <meshBasicMaterial  color={isSelectedForAddLine ? "#cabf66" :"#cac6a6"}
+                                    transparent 
+                                    opacity={0.3} />
+                </mesh>
+            )}
+
+            {isDeleting && (
+                <mesh>
+                <sphereGeometry args={[0.65, 8, 8]} />
+                <meshBasicMaterial  color={isSelectedForDelete ? "#ff0000" :"#cac6a6"}
+                                    transparent 
+                                    opacity={0.3} />
+                </mesh>
+            )}
+
             <Html 
                 center
-                distanceFactor={12}>
+                distanceFactor={12}
+                style={{ pointerEvents: 'none' }}
+            >
                 <div className="node-label">{label}</div>
             </Html>
-        </group>
-    )
-
-})
-
-export default Node
+        </>
+    )}
 
 
 

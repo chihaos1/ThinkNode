@@ -5,11 +5,16 @@ import * as THREE from "three"
 interface EdgeProps {
     start: [number, number, number]
     end: [number, number, number]
+    isDeleting: boolean
+    isSelectedForDelete: boolean
 }
 
-export default function Edge({ start, end }: EdgeProps) {
+export default function Edge({ start, end, isDeleting, isSelectedForDelete }: EdgeProps) {
+
+    // Re-Position the Edges
 
     const NODE_RADIUS = 0.58
+
     const points = useMemo(() => {
         const startVec = new THREE.Vector3(...start)
         const endVec = new THREE.Vector3(...end)
@@ -23,12 +28,25 @@ export default function Edge({ start, end }: EdgeProps) {
     },[start, end])
 
     return (
-        <Line 
-            points={points}
-            color="#705d42"
-            lineWidth={5}
-            transparent
-            opacity={0.6}
-        />
+        <>
+            <Line 
+                points={points}
+                color="#705d42"
+                lineWidth={5}
+                transparent
+                opacity={0.6}
+            />
+            {isDeleting && (
+                <Line 
+                    points={points}
+                    color={isSelectedForDelete ? "#ff0000" : "#cac6a6"}
+                    lineWidth={7}
+                    transparent
+                    opacity={1}
+                />
+                )
+            }
+        </>
+        
     )
 }

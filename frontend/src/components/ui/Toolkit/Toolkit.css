@@ -1,6 +1,6 @@
 .toolkit {
-    position: fixed;
-    height: 10rem;
+    position: absolute;
+    height: 11.5rem;
     width: 4.5rem;
     left: 2rem;
     padding: 1rem;
@@ -17,12 +17,24 @@
     color: #C5C2A8;
 }
 
+.add-wrapper {
+    position: relative;
+}
+
 .toolkit img {
     width: 2.5rem;   
     height: 2.5rem;
     cursor: pointer;
 }
 
-.toolkit img:hover {
+.image-wrapper:hover {
     transform: scale(0.90);
+}
+
+.demolish-wrapper {
+    position: relative;
+}
+
+.demolish-image-wrapper {
+    margin-left: 0.3rem;
 }

@@ -14,6 +14,7 @@ interface MindMapModalProps {
 export default function MindMapModal({ mindMapListData, setMindMapListData, setCurrentMindMapId }: MindMapModalProps) {
     
     // ---------- Format Date from Supabase ----------
+    
     const formatDate = (timestamp: string): string => {
         const cleanedString = timestamp.replace(" ", "T")
         const finalIsoString = cleanedString.substring(0, cleanedString.lastIndexOf("+")) + "Z"

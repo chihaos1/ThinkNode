@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Canvas } from "@react-three/fiber"
 import { supabase } from "./util/supabase-client"
 import Scene from "./components/3d/Scene"
@@ -9,44 +9,17 @@ import MindMapModal from "./components/ui/Modals/MindMapModal"
 import Toolkit from "./components/ui/Toolkit/Toolkit"
 import ControlsGuide from "./components/ui/ControlsGuide/ControlsGuide"
 import UserGuide from "./components/ui/UserGuide/UserGuide"
-import type { Coordinates, GraphNode, GraphResponse } from "./models/Graph"
+import type { Coordinates, GraphNode, GraphEdge, GraphResponse, nodeDetail } from "./models/Graph"
 import type { MindMapItem } from "./models/MindMap"
 import type { User } from "@supabase/supabase-js"
 import * as THREE from "three"
 import './App.css'
 
-type nodeDetail = {
-  id: string
-  label: string
-  position: [number, number, number]
-  description: string
-}
-
 function App() {
 
   const [mode, setMode] = useState<"idle" | "thinking" | "exploring">("idle")
   
-  // Show Auth Modals
-
-  const [showAuthModal, setShowAuthModal] = useState(false)
-  const [defaultTab, setDefaultTab] = useState<"login" | "signup">("login")
-
-  const openLoginModal = () => {
-    setDefaultTab("login")
-    setShowAuthModal(true)
-  }
-
-  const openSignupModal = () => {
-    setDefaultTab("signup")
-    setShowAuthModal(true)
-  }
-
-  const closeModal = () => {
-    setShowAuthModal(false)
-    setShowMindMapModal(false)
-  }
-
-  // ---------- Listen for Session and Session Changes ----------
+    // ---------- Listen for Session and Session Changes ----------
   
   const [user, setUser] = useState<User | null>(null)
 
@@ -68,6 +41,52 @@ function App() {
       authListener.subscription.unsubscribe()
     }
   }, [])
+
+  // ---------- Show Auth Modal ----------
+
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [defaultTab, setDefaultTab] = useState<"login" | "signup">("login")
+
+  const openLoginModal = () => {
+    setDefaultTab("login")
+    setShowAuthModal(true)
+  }
+
+  const openSignupModal = () => {
+    setDefaultTab("signup")
+    setShowAuthModal(true)
+  }
+
+  const closeModal = () => {
+    setShowAuthModal(false)
+    setShowMindMapModal(false)
+  }
+
+  // ---------- Show Mind Map Modal ----------
+  
+  const [showMindMapModal, setShowMindMapModal] = useState<boolean>(false)
+  const [mindMapListData, setMindMapListData] = useState<MindMapItem[] | null>(null)
+  
+  const openMindMapList = async() => {
+    const { data, error } = await supabase
+      .from("mind_maps")
+      .select("id, title, created_at")
+      .eq("user_id", user?.id)
+      .order("created_at", { ascending: false})
+    
+    setMindMapListData(data)
+
+    if (error) {
+        console.error("Supabase error:", error)
+        alert("Saving Mind Map failed: " + error.message)
+      }
+
+    setShowMindMapModal(true)
+  }
+
+  useEffect(() => {
+    setShowMindMapModal(false)
+  }, [user])
 
   // ---------- Handle User Profile Dropdown Menu ----------
   
@@ -94,36 +113,10 @@ function App() {
     setUserProfileDropdownOpen(false)
   }, [user])
 
-  // ---------- Handle Mind Map Modal ----------
-  
-  const [showMindMapModal, setShowMindMapModal] = useState<boolean>(false)
-  const [mindMapListData, setMindMapListData] = useState<MindMapItem[] | null>(null)
-  
-  const openMindMapList = async() => {
-    const { data, error } = await supabase
-      .from("mind_maps")
-      .select("id, title, created_at")
-      .eq("user_id", user?.id)
-      .order("created_at", { ascending: false})
-    
-    setMindMapListData(data)
-
-    if (error) {
-        console.error("Supabase error:", error)
-        alert("Saving Mind Map failed: " + error.message)
-      }
-
-    setShowMindMapModal(true)
-  }
-
-  useEffect(() => {
-    setShowMindMapModal(false)
-  }, [user])
-
   // ---------- Prompt Passed to Backend ----------
 
   const [prompt, setPrompt] = useState<string>("")
-  const [response, setResponse] = useState<GraphResponse | null >(null)
+  const [nodeData, setNodeData] = useState<GraphResponse | null >(null)
 
   const handleSubmit = async (prompt: string) => {
     
@@ -144,7 +137,7 @@ function App() {
       }
       const data = await response.json()
 
-      setResponse(data)
+      setNodeData(data)
       setTitle("Untitled Mind Map")
       setMode("exploring")
 
@@ -156,10 +149,10 @@ function App() {
     }
   }
 
-  // ---------- Update Node Position ----------
+  // ---------- Update Node Position after Dragging ----------
 
   const handleUpdateNodePosition = (nodeId: string, newPos: THREE.Vector3) => {
-    setResponse(prev => {
+    setNodeData(prev => {
       if (!prev) return prev
 
       // Get the Moved Node
@@ -169,10 +162,10 @@ function App() {
 
       // Get Old Coordinates
       const oldCoords: Coordinates = [movedNode.x, movedNode.y, movedNode.z]
-      console.log("OLD COORDS:", oldCoords)
+
       // Get New Coordinates
       const newCoords: Coordinates = [newPos.x, newPos.y, newPos.z]
-      console.log("NEW COORDS:", newCoords)
+
       return {
         ...prev,
 
@@ -220,19 +213,18 @@ function App() {
   }
 
   const updateNode = (nodeId: number, updates: Partial<GraphNode>) => {
-    if (!response) return
+    if (!nodeData) return
 
-    const updatedNodes = response.nodes.map(node =>
+    const updatedNodes = nodeData.nodes.map(node =>
       node.node_id === nodeId
         ? {...node, ...updates}
         : node
     )
 
-    setResponse({
-      ...response,
+    setNodeData({
+      ...nodeData,
       nodes: updatedNodes
     })
-
   }
 
   const handleLabelSubmit = () => {
@@ -255,6 +247,91 @@ function App() {
     }
   }
 
+  // ---------- Add Node ----------
+
+  const handleAddNode = (x: number, y: number, z: number) => {
+    
+    if (!nodeData) return
+    
+    const maxNodeId = nodeData.nodes.reduce((max, node) => {
+      return node.node_id > max ? node.node_id : max
+    }, 0)
+    const newNodeId = maxNodeId + 1
+    const newNode: GraphNode = {
+      node_id: newNodeId,
+      label: "New Node",
+      description: "Add Description Here",
+      x,
+      y,
+      z,
+    }
+
+    setNodeData(prev => {
+      if (!prev) return null
+      return {
+        ...prev,
+        nodes: [...prev.nodes, newNode]
+      }
+    })
+  }
+
+  // ---------- Add Line ----------
+
+  const handleAddLine = ([startNode, endNode]: [GraphNode, GraphNode]) => {
+
+    const newLines: GraphEdge = {
+      source: [startNode.x, startNode.y, startNode.z],
+      target: [endNode.x, endNode.y, endNode.z]
+    }
+
+    setNodeData(prev => {
+      if (!prev) return null
+      return {
+        ...prev,
+        edges: [...prev.edges, newLines]
+      }
+    })
+  }
+
+  // ---------- Delete Node and Line ----------
+
+  const handleDeleteItems = (items: {nodes: GraphNode[], edges: GraphEdge[] }) => {
+
+    setNodeData(prev => {
+      if (!prev) return null
+      
+      // Get the Deleted Nodes Coords
+      const deletedNodeCoords = items.nodes.map(node =>
+        `${node.x},${node.y},${node.z}`
+      )
+
+      return {
+        ...prev,
+        nodes: prev.nodes.filter(n =>
+          !items.nodes.some(delNode => delNode.node_id.toString() === n.node_id.toString())
+        ),
+        edges: prev.edges.filter(edge => {
+          const edgeSourceStr = edge.source.join(",")
+          const edgeTargetStr = edge.target.join(",")
+
+          const isSelectedEdge = items.edges.some(e =>
+            e.source.join(",") === edgeSourceStr &&
+            e.target.join(",") === edgeTargetStr
+          )
+
+          if (isSelectedEdge) return false // Remove Edge
+
+          const connectsToDeletedNode = deletedNodeCoords.some(coords => // Removes Line Attached to a Deleted Node
+            edgeSourceStr === coords || edgeTargetStr === coords
+          )
+
+          return !connectsToDeletedNode
+
+        })
+      }
+    })
+  }
+
   // ---------- Set Mind Map Title----------
 
   const [title, setTitle] = useState<string>("Untitled Mind Map")
@@ -274,8 +351,8 @@ function App() {
           user_id: user.id,
           title: title,
           prompt: prompt,
-          nodes: response?.nodes,
-          edges: response?.edges
+          nodes: nodeData?.nodes,
+          edges: nodeData?.edges
         })
         .select()
         .single()
@@ -285,7 +362,6 @@ function App() {
         alert("Saving Mind Map failed: " + error.message)
       }
 
-      console.log("Saved successfully:", data)
       alert("Mind map saved successfully!")
 
     } catch (error) {
@@ -316,24 +392,24 @@ function App() {
         }
 
         if (data) {
-          setResponse(null)  
+          setNodeData(null)  
           
-          setResponse({
+          setNodeData({
               nodes: data.nodes,
               edges: data.edges
             })
             
-            setTitle(data.title)
-            setShowMindMapModal(false)
-            setSelectedNode(null)
-            setMode("exploring");
+          setTitle(data.title)
+          setShowMindMapModal(false)
+          setSelectedNode(null)
+          setMode("exploring");
         }
     };
 
     fetchMindMap();
 
   }, [currentMindMapId])
-
+  
   return (
     <>
       <div className="app">
@@ -349,17 +425,32 @@ function App() {
                 title={title}
                 setTitle={setTitle}
          />
-        <main className={`main-section ${mode === "exploring" ? "exploring" : ""}`} >
+        <main className={`main-section ${mode === "exploring" ? "exploring" : ""}`} 
+              onContextMenu={(e) => {
+                e.stopPropagation()
+                if (selectedNode) {
+                  handleNodeDeselect()
+                  handleLabelSubmit()
+                  handleDescriptionlSubmit()
+                }
+                e.nativeEvent.preventDefault()
+              }}>
           { mode !== "exploring" && (
             <h1 className={mode === "thinking" ? "slide-up" : ""}>ThinkNode</h1>
           )}
           <div className={`canvas-wrapper ${selectedNode ? "shrink" : ""}`} onClick={closeModal}>
             <Canvas 
-              onPointerMissed={handleNodeDeselect}
               camera={{ position: [10, 0, 10], fov: 40 }}
             >
               <group scale={1.1}>
-                <Scene mode={mode} nodeData={response} updateNodeCoords={handleUpdateNodePosition} selectedNode={selectedNode} currentMindMapId={currentMindMapId} />
+                <Scene  mode={mode} 
+                        nodeData={nodeData} 
+                        updateNodeCoords={handleUpdateNodePosition} 
+                        selectedNode={selectedNode} 
+                        currentMindMapId={currentMindMapId} 
+                        addNewNode={handleAddNode} 
+                        addNewLine={handleAddLine}
+                        deleteItems={handleDeleteItems} />
               </group>
             </Canvas>
           </div>
@@ -368,12 +459,11 @@ function App() {
           { mode === "idle" && <UserGuide />}
           
           { mode === "exploring" && !selectedNode && <Toolkit onSave={handleSaveMindMap} />}
-          { mode === "exploring" && !selectedNode && <ControlsGuide />}
+          { <ControlsGuide mode={mode} selectedNode={selectedNode} />}
           
           <div className={`node-panel ${selectedNode ? "active" : ""}`}>
             {selectedNode && (
               <div className="node-panel-content">
-                {/* <h2>{selectedNode.label}</h2> */}
                 <input 
                   type="text"
                   className="node-panel-label"
@@ -387,6 +477,7 @@ function App() {
                   value={editableDescription}
                   onChange={(e) => setEditableDescription(e.target.value)}
                   onBlur={handleDescriptionlSubmit}
+                  onPointerDown={(e) => e.stopPropagation()}
                 />
               </div>
             )}
