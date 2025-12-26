@@ -6,7 +6,7 @@ import "./Toolkit.css"
 import saveIcon from "../../../assets/icons/Save.svg"
 import addIcon from "../../../assets/icons/Add.png"
 import deleteIcon from "../../../assets/icons/Minus.png"
-import exportIcon from "../../../assets/icons/EXPORT.png"
+import exportIcon from "../../../assets/icons/Export.png"
 
 interface ToolkitProps {
     onSave: () => void
