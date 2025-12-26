@@ -67,7 +67,9 @@ export default function Synapse() {
       pos[3] = x;            pos[4] = y;            pos[5] = z
 
       geometry.attributes.position.needsUpdate = true
-      lineRef.current.material.opacity = 1 - data.progress
+
+      const material = lineRef.current.material as THREE.LineBasicMaterial;
+      material.opacity = 1 - data.progress
     }
   })
 
@@ -75,18 +77,17 @@ export default function Synapse() {
     <>
       <points>
         <bufferGeometry>
-          <bufferAttribute attach="attributes-position" count={count} array={positions} itemSize={3} />
+          <bufferAttribute attach="attributes-position" count={count} args={[positions, 3]} />
         </bufferGeometry>
-        <pointsMaterial size={0.08} color="#000000" emissive="#ffffffff" emissiveIntensity={5} transparent />
+        <pointsMaterial size={0.08} color="#000000" transparent />
       </points>
 
-      <line ref={lineRef}>
+      <primitive object={new THREE.Line()} ref={lineRef}>
         <bufferGeometry>
           <bufferAttribute
             attach="attributes-position"
             count={2}
-            array={new Float32Array(6)}
-            itemSize={3}
+            args={[new Float32Array(6), 3]}
           />
         </bufferGeometry>
         <lineBasicMaterial
@@ -96,7 +97,7 @@ export default function Synapse() {
           linewidth={3}
           blending={THREE.AdditiveBlending}
         />
-      </line>
+      </primitive>
     </>
   )
 }

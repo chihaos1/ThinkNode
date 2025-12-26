@@ -18,6 +18,7 @@ import * as THREE from "three"
 import './App.css'
 
 function App() {
+  const apiUrl = import.meta.env.VITE_API_URL
 
   const [mode, setMode] = useState<Mode>("idle")
   
@@ -128,7 +129,7 @@ function App() {
 
       if (mode === "idle") {
         setMode("thinking")
-		    const response = await fetch("http://127.0.0.1:8002/api/chat", {
+		    const response = await fetch(`${apiUrl}/api/chat`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -148,7 +149,7 @@ function App() {
       } 
       else if (mode === "exploring") {
         setMode("updating")
-		    const response = await fetch("http://127.0.0.1:8002/api/chat", {
+		    const response = await fetch(`${apiUrl}/api/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -387,9 +388,10 @@ function App() {
         .upsert({
           user_id: user.id,
           title: title,
-          prompt: prompt,
+          ...(prompt && { prompt }),
           nodes: nodeData?.nodes,
-          edges: nodeData?.edges
+          edges: nodeData?.edges,
+          updated_at: new Date().toISOString()
         }, {
           onConflict: "user_id,title"
         })
@@ -456,7 +458,7 @@ function App() {
       setMode("exporting")
 
       try {
-        const response = await fetch("http://127.0.0.1:8002/api/export", {
+        const response = await fetch(`${apiUrl}/api/export`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"

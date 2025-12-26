@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { supabase } from "../../../util/supabase-client"
 import DeleteIcon from "../../../assets/icons/Delete.svg"
 import type { MindMapItem } from "../../../models/MindMap"

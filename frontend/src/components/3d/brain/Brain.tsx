@@ -46,7 +46,7 @@ export default function Brain({ mode }: BrainProps) {
     })
   }, [scene])
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     if (mode === "thinking" && brainRef.current) {
       brainRef.current.rotation.y += delta * 10 
     }
