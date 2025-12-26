@@ -11,7 +11,7 @@ interface BrainProps {
 }
 
 export default function Brain({ mode }: BrainProps) {
-  const { scene } = useGLTF("/src/assets/models/brain.glb")
+  const { scene } = useGLTF("/models/brain.glb")
   const brainRef = useRef<THREE.Object3D>(scene)
 
   useMemo(() => {
