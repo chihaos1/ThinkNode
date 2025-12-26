@@ -1,5 +1,5 @@
-import sphereIcon from "../../../assets/icons/Sphere.png"
-import lineIcon from "../../../assets/icons/Line.png"
+import sphereIcon from "../../../../assets/icons/Sphere.png"
+import lineIcon from "../../../../assets/icons/Line.png"
 import "./Add.css"
 
 export default function Add() {

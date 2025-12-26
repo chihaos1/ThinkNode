@@ -3,6 +3,7 @@ import { useFrame, useThree } from "@react-three/fiber"
 import { Billboard, OrbitControls, Float, Environment, DragControls  } from "@react-three/drei"
 import { EffectComposer, Bloom } from "@react-three/postprocessing"
 import type { GraphResponse, GraphNode, GraphEdge } from "../../models/Graph"
+import type { Mode } from "../../models/Mode"
 import * as THREE from "three"
 import Brain from "./brain/Brain"
 import Neurons from "./brain/Neurons"
@@ -16,7 +17,7 @@ type nodeDetail = {
 }
 
 interface SceneProps {
-  mode: "idle" | "thinking" | "exploring"
+  mode: Mode
   nodeData: GraphResponse | null
   updateNodeCoords: (nodeId: string, newPos: THREE.Vector3) => void
   selectedNode: nodeDetail | null
@@ -81,28 +82,28 @@ export default function Scene({ mode,
     // ---------- Focus Camera on the Selected Node ---------- 
 
     useEffect(() => {
-      if (selectedNode && controlsRef.current) {
+      if (selectedNode && controlsRef.current && camera) {
         const selectedNodePos = selectedNode.position
         const target = new THREE.Vector3(...selectedNodePos)
-        
-        const cameraPos = new THREE.Vector3(
-          selectedNodePos[0] + 4,  // Right
-          selectedNodePos[1] + 2,  // Above
-          selectedNodePos[2] + 4   // Back
-        )
+        const offset = new THREE.Vector3(10, 3, 6)  
+        const cameraPos = target.clone().add(offset)
+
         const animate = () => {
           camera.position.lerp(cameraPos, 0.1)
-          controlsRef.current.target.lerp(target, 0.1) // Moves the Orbit Control Simultaneously
-          controlsRef.current.update() // Updates Orbit Control
-          
-          if (camera.position.distanceTo(cameraPos) > 0.1) {
-            requestAnimationFrame(animate) // Requests Animation based on Distance to Specified Node 
+          controlsRef.current.target.lerp(target, 0.1)
+          controlsRef.current.update()
+
+          if (
+            camera.position.distanceTo(cameraPos) > 0.05 ||
+            controlsRef.current.target.distanceTo(target) > 0.05
+          ) {
+            requestAnimationFrame(animate)
           }
         }
-        
+
         animate()
       }
-    }, [selectedNode, camera])
+    }, [selectedNode, camera, controlsRef])
 
     // ---------- Hovering Effect for Selected Node ---------- 
 
@@ -279,6 +280,10 @@ export default function Scene({ mode,
       const handleCancelDelete = () => {
         setIsDeleting(false)
         setItemsToDelete({nodes:[], edges: []})
+        const canvas = document.querySelector("canvas")
+        if (canvas) {
+          canvas.style.cursor = "default"
+        }
       }
 
       window.addEventListener("cancelDelete", handleCancelDelete)
@@ -309,7 +314,7 @@ export default function Scene({ mode,
               )
             }
             {
-                mode !== "exploring" && (
+                mode !== "exploring" && mode !== "updating" && mode !== "exporting" && (
                     <>
                         <Float speed={1.5} rotationIntensity={0.6} floatIntensity={0.8}>
                             <Brain mode={mode}/>
@@ -319,7 +324,7 @@ export default function Scene({ mode,
                 )
             }
             {
-                mode === "exploring" && nodeData && (
+                (mode === "exploring" || mode === "updating" || mode === "exporting")  && nodeData && (
                 <>
                   {/* Render Nodes */}
                   {
@@ -467,7 +472,7 @@ export default function Scene({ mode,
                 autoRotate={mode !== "exploring"} 
                 autoRotateSpeed={1}          
                 minDistance={6}
-                maxDistance={mode === "exploring" ? 30 : 15}
+                maxDistance={mode === "exploring" ? 50 : 15}
                 zoomSpeed={1.2}
                 panSpeed={1.5}
             />

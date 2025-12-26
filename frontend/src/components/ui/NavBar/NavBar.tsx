@@ -4,12 +4,11 @@ import goBackIcon from "../../../assets/icons/GoBack.svg"
 import MindMapList from "../../../assets/icons/MindMapList.svg"
 import type { User } from "@supabase/supabase-js"
 import type { RefObject } from "react"
+import type { Mode } from "../../../models/Mode"
 import "./NavBar.css"
 
-type Mode = "idle" | "thinking" | "exploring";
-
 interface NavBarProps {
-    mode: "idle" | "thinking" | "exploring"
+    mode: Mode
     setMode: React.Dispatch<React.SetStateAction<Mode>>
     user: User | null
     onLoginClick: () => void
@@ -60,12 +59,12 @@ export default function NavBar({  mode, setMode, user, onLoginClick, onSignupCli
         <nav className={`navbar ${mode === "thinking" ? "slide-up": mode === "exploring" ? "slide-down-enter": ""}`}>
           
           {
-            mode !== "exploring" && (
+            (mode !== "exploring" && mode !== "updating" && mode !== "exporting") && (
               <div className="navbar-spacer" />
             )
           }
           {
-            mode === "exploring" && (
+            (mode === "exploring" || mode === "updating" || mode === "exporting") && (
               <>
                 <div className="navbar-goback">
                   <img src={goBackIcon} onClick={() => setMode("idle")}/>

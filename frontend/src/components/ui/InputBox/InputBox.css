@@ -5,6 +5,52 @@
   font-style: normal;
 }
 
+.input-toggle-btn {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 5vh; 
+  width: 4rem;
+  height: 2.1rem;
+  border-radius: 20px 20px 0 0;
+  background: rgba(0, 0, 0);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  color: #ffffff;
+  z-index: 100;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.input-toggle-btn:hover {
+  background: rgba(0, 0, 0, 0.3);
+  transform: translateX(-50%) scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.input-toggle-btn:active {
+  transform: translateX(-50%) scale(0.95);
+}
+
+.input-toggle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.arrow-img,
+.chatbox-img {
+  height: 1.2rem;
+  width: 1.2rem;
+}
+
+/* ---------- Input Bar ---------- */
+
 .input-bar {
   position: absolute;
   top: 75vh;
@@ -24,7 +70,7 @@
     0 12px 40px rgba(0, 0, 0, 0.18),      
     0 4px 12px rgba(0, 0, 0, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: none;
   z-index: 5;
 }
 
@@ -110,4 +156,11 @@
     transform: translateY(160vh);
     opacity: 0;
   }
+}
+
+.input-bar.exploring {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: none;
 }

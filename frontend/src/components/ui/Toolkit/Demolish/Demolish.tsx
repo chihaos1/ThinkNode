@@ -1,5 +1,5 @@
-import cancelIcon from "../../../assets/icons/Cancel.png"
-import confirmIcon from "../../../assets/icons/Confirm.png"
+import cancelIcon from "../../../../assets/icons/Cancel.png"
+import confirmIcon from "../../../../assets/icons/Confirm.png"
 import "./Demolish.css"
 
 interface DemolishProps {

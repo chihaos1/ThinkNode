@@ -1,15 +1,9 @@
-@font-face {
-  font-family: 'GTWalsheimLight';
-  src: url('./assets/fonts/GTWalsheimLight.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
 
-.delete-function-wrapper {
+.export-function-wrapper {
     position: absolute;
     height: 10rem;
     width: 5rem;
-    left: calc(100% + 1.5rem);
+    left: calc(100% + 1.8rem);
     bottom: -3.5rem;
     display: flex;
     flex-direction: column;
@@ -20,16 +14,16 @@
     font-family: 'GTWalsheimLight';
 }
 
-.confirm-delete-wrapper {
+.export-deck-wrapper {
     border-radius: 20px 20px 0 0;
 }
 
-.cancel-delete-wrapper {
+.export-docx-wrapper {
     border-radius: 0 0 20px 20px ;
 }
 
-.confirm-delete-wrapper,
-.cancel-delete-wrapper {
+.export-deck-wrapper,
+.export-docx-wrapper {
     height: 100%;
     width: 100%;
     display: flex;
@@ -40,7 +34,7 @@
     cursor: pointer;
 }
 
-.confirm-delete-wrapper:hover,
-.cancel-delete-wrapper:hover {
+.export-deck-wrapper:hover,
+.export-docx-wrapper:hover {
     background-color: #705d42bb;
 }

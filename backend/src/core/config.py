@@ -10,16 +10,16 @@ class Settings(BaseSettings):
     """Contains the configuration settings for the application"""
 
     # Core Settings
-    CORS_ORIGINS: list[str] = ["http://localhost:5173"]
+    CORS_ORIGINS: list[str] = os.getenv("CORS_ORIGINS")
     ENVIRONMENT: Literal["DEV","PREPROD","PROD"] = os.getenv("ENVIRONMENT")
 
     # Project Settings
     PROJECT_NAME: str = "ThinkNode"
-    API_VERSION: str = "1"
+    API_VERSION: str = os.getenv("API_VERSION")
 
     # Claude Settings
     CLAUDE_API_KEY: str = os.getenv("CLAUDE_API_KEY")
-    CLAUDE_MODEL: str = "claude-sonnet-4-20250514"
-    CLAUDE_MAX_TOKENS: int = 8000
+    CLAUDE_MODEL: str = os.getenv("CLAUDE_MODEL")
+    CLAUDE_MAX_TOKENS: int = os.getenv("CLAUDE_MAX_TOKENS")
 
 settings: Settings = Settings()

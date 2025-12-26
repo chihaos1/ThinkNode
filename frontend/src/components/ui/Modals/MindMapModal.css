@@ -29,14 +29,21 @@
     font-family: "GTWalsheimUltraBoldOblique";
 }
 
+.modal-content {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #C5C2A8 #3b3123;
+}
+
 .mindmap-wrapper {
-    margin-top: 2rem;
-    font-family: 'GTWalsheimLight';
+  margin-top: 2rem;
+  font-family: 'GTWalsheimLight';
 }
 
 .mindmap-menu-list {
-    list-style: none;
-    cursor: pointer;
+  list-style: none;
+  cursor: pointer;
 }
 
 .mindmap-menu-list li {

@@ -1,8 +1,30 @@
-.toolkit {
+@font-face {
+  font-family: 'GTWalsheimUltraBoldOblique';
+  src: url('./assets/fonts/GTWalsheimUltraBoldOblique.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'GTWalsheimLight';
+  src: url('./assets/fonts/GTWalsheimLight.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.toolkit-wrapper {
     position: absolute;
-    height: 11.5rem;
+    height: 15rem;
     width: 4.5rem;
     left: 2rem;
+    bottom: 32rem;
+    display: flex;
+    flex-direction: column; 
+    gap: 1.5rem;
+    font-family: 'GTWalsheimLight';
+}
+
+.toolkit {
     padding: 1rem;
     display: flex;
     justify-content: start; 
@@ -13,11 +35,13 @@
     box-shadow: 
         0 4px 8px rgba(0, 0, 0, 0.1),       
         0 8px 15px rgba(0, 0, 0, 0.1);
-    gap: 0.5rem;
+    gap: 0.7rem;
     color: #C5C2A8;
 }
 
-.add-wrapper {
+.add-wrapper,
+.demolish-wrapper,
+.export-wrapper {
     position: relative;
 }
 
@@ -27,14 +51,48 @@
     cursor: pointer;
 }
 
-.image-wrapper:hover {
+.image-wrapper:hover,
+.demolish-image-wrapper:hover {
     transform: scale(0.90);
 }
 
-.demolish-wrapper {
-    position: relative;
+/* ---------- Tooltip ---------- */
+
+[data-tooltip] {
+  position: relative;
+  cursor: pointer;
 }
 
-.demolish-image-wrapper {
-    margin-left: 0.3rem;
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 5rem;
+  bottom: 0.3rem;
+  margin-bottom: 8px;
+  padding: 6px 12px;
+  background: #3b3123;
+  color: #C5C2A8;
+  font-size: 14px;
+  white-space: nowrap;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1000;
+  font-family: 'GTWalsheimLight';
+}
+
+[data-tooltip]:hover::after {
+  opacity: 1;
+}
+
+[data-tooltip]:active::after {
+    display: none;
+    opacity: 0;
+    transition: none;
+}
+
+[data-menu-open="true"] [data-tooltip]::after {
+    display: none;
+    pointer-events: none;
+    opacity: 0;
 }

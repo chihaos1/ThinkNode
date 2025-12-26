@@ -2,11 +2,12 @@ import { useRef } from "react"
 import { useFrame } from "@react-three/fiber"
 import { useGLTF } from "@react-three/drei"
 import { useMemo } from "react"
+import type { Mode } from "../../../models/Mode"
 import * as THREE from "three"
 
 
 interface BrainProps {
-  mode: "idle" | "thinking" | "exploring"
+  mode: Mode
 }
 
 export default function Brain({ mode }: BrainProps) {

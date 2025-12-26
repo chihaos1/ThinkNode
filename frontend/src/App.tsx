@@ -1,23 +1,25 @@
-import { useState, useEffect, useRef } from "react"
+import { useCallback, useState, useEffect, useRef } from "react"
 import { Canvas } from "@react-three/fiber"
 import { supabase } from "./util/supabase-client"
-import Scene from "./components/3d/Scene"
+import AuthModal from "./components/ui/Modals/AuthModal"
+import ControlsGuide from "./components/ui/ControlsGuide/ControlsGuide"
 import InputBox from "./components/ui/InputBox/InputBox"
 import NavBar from "./components/ui/NavBar/NavBar"
-import AuthModal from "./components/ui/Modals/AuthModal"
 import MindMapModal from "./components/ui/Modals/MindMapModal"
+import Scene from "./components/3d/Scene"
+import Spinner from "./components/ui/Spinner/Spinner"
 import Toolkit from "./components/ui/Toolkit/Toolkit"
-import ControlsGuide from "./components/ui/ControlsGuide/ControlsGuide"
 import UserGuide from "./components/ui/UserGuide/UserGuide"
 import type { Coordinates, GraphNode, GraphEdge, GraphResponse, nodeDetail } from "./models/Graph"
 import type { MindMapItem } from "./models/MindMap"
+import type { Mode } from "./models/Mode"
 import type { User } from "@supabase/supabase-js"
 import * as THREE from "three"
 import './App.css'
 
 function App() {
 
-  const [mode, setMode] = useState<"idle" | "thinking" | "exploring">("idle")
+  const [mode, setMode] = useState<Mode>("idle")
   
     // ---------- Listen for Session and Session Changes ----------
   
@@ -121,25 +123,53 @@ function App() {
   const handleSubmit = async (prompt: string) => {
     
     setPrompt(prompt)
-    setMode("thinking")
-
+    
     try {
-      const response = await fetch("http://127.0.0.1:8002/api/chat", {
+
+      if (mode === "idle") {
+        setMode("thinking")
+		    const response = await fetch("http://127.0.0.1:8002/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({"prompt": prompt})
+        })
+      
+        if (!response.ok) {
+          throw new Error (`HTTP ERROR: ${response.status}`)
+        }
+        const data = await response.json()
+
+        setNodeData(data)
+        setTitle("Untitled Mind Map")
+        setMode("exploring")
+		    setIsInputCollapsed(true)
+      } 
+      else if (mode === "exploring") {
+        setMode("updating")
+		    const response = await fetch("http://127.0.0.1:8002/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({"prompt": prompt})
-      })
+        body: JSON.stringify({
+            "prompt": prompt,
+            "current_nodes": nodeData?.nodes,
+            "current_edges": nodeData?.edges
+			    })
+        })
       
-      if (!response.ok) {
-        throw new Error (`HTTP ERROR: ${response.status}`)
-      }
-      const data = await response.json()
+        if (!response.ok) {
+          throw new Error (`HTTP ERROR: ${response.status}`)
+        }
+        const data = await response.json()
 
-      setNodeData(data)
-      setTitle("Untitled Mind Map")
-      setMode("exploring")
+        setNodeData(data)
+        setTitle(title)
+        setMode("exploring")
+      }
+      
 
     } catch (error) {
       
@@ -147,6 +177,13 @@ function App() {
       const errorMessage = error instanceof Error ? error.message : "Failed to get response. Please try again"
       alert(errorMessage)
     }
+  }
+
+  // ---------- Expanding or Collapse Input Bar in Mind Map ----------
+  const [isInputCollapsed, setIsInputCollapsed] = useState(true)
+
+  const handleToggleInput = () => {
+    setIsInputCollapsed(prev => !prev)
   }
 
   // ---------- Update Node Position after Dragging ----------
@@ -345,14 +382,16 @@ function App() {
     }
 
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("mind_maps")
-        .insert({
+        .upsert({
           user_id: user.id,
           title: title,
           prompt: prompt,
           nodes: nodeData?.nodes,
           edges: nodeData?.edges
+        }, {
+          onConflict: "user_id,title"
         })
         .select()
         .single()
@@ -392,24 +431,86 @@ function App() {
         }
 
         if (data) {
-          setNodeData(null)  
-          
-          setNodeData({
-              nodes: data.nodes,
-              edges: data.edges
-            })
-            
-          setTitle(data.title)
-          setShowMindMapModal(false)
-          setSelectedNode(null)
-          setMode("exploring");
+			setNodeData(null)  
+			
+			setNodeData({
+				nodes: data.nodes,
+				edges: data.edges
+				})
+				
+			setTitle(data.title)
+			setShowMindMapModal(false)
+			setSelectedNode(null)
+			setMode("exploring");
+			setIsInputCollapsed(true)
         }
     };
 
     fetchMindMap();
 
   }, [currentMindMapId])
-  
+
+  // ---------- Export Mind Maps ----------
+
+  const exportMindMap = useCallback(async (format: string) => {
+      setMode("exporting")
+
+      try {
+        const response = await fetch("http://127.0.0.1:8002/api/export", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+              "format": format,
+              "title": title,
+              "nodes": nodeData?.nodes,
+              "edges": nodeData?.edges
+            })
+          })
+        
+          if (!response.ok) {
+            throw new Error (`HTTP ERROR: ${response.status}`)
+          }
+          
+          // Create a Download Link
+          const blob = await response.blob()
+          const url = window.URL.createObjectURL(blob)
+          const a = document.createElement("a")
+          a.href = url
+          a.download = `${title || "mindmap"}.${format === "deck" ? "pptx" : "docx"}`
+          document.body.appendChild(a)
+          a.click()
+
+          // Cleanup
+          window.URL.revokeObjectURL(url)
+          document.body.removeChild(a)
+
+      } catch (error) {
+        console.error("Export failed:", error)
+        alert("Failed to export. Please try again.")
+      } finally {
+        setMode("exploring")
+      }
+    }, [title, nodeData, setMode])
+
+  useEffect(() => { //Export Deck
+    
+    const handleExportDeck = () => exportMindMap("deck")
+
+    window.addEventListener("startExportingDeck", handleExportDeck)
+    return () => window.removeEventListener("startExportingDeck", handleExportDeck)
+  }, [exportMindMap])
+
+  useEffect(() => { //Export Document
+    
+    const handleExportDocument = () => exportMindMap("document")
+
+    window.addEventListener("startExportingDocument", handleExportDocument)
+    return () => window.removeEventListener("startExportingDocument", handleExportDocument)
+  }, [exportMindMap])
+
+
   return (
     <>
       <div className="app">
@@ -435,58 +536,65 @@ function App() {
                 }
                 e.nativeEvent.preventDefault()
               }}>
-          { mode !== "exploring" && (
-            <h1 className={mode === "thinking" ? "slide-up" : ""}>ThinkNode</h1>
-          )}
-          <div className={`canvas-wrapper ${selectedNode ? "shrink" : ""}`} onClick={closeModal}>
-            <Canvas 
-              camera={{ position: [10, 0, 10], fov: 40 }}
-            >
-              <group scale={1.1}>
-                <Scene  mode={mode} 
-                        nodeData={nodeData} 
-                        updateNodeCoords={handleUpdateNodePosition} 
-                        selectedNode={selectedNode} 
-                        currentMindMapId={currentMindMapId} 
-                        addNewNode={handleAddNode} 
-                        addNewLine={handleAddLine}
-                        deleteItems={handleDeleteItems} />
-              </group>
-            </Canvas>
-          </div>
-          { showAuthModal && <AuthModal defaultTab={defaultTab} close={closeModal} />}
-          { showMindMapModal && <MindMapModal mindMapListData={mindMapListData} setMindMapListData={setMindMapListData} setCurrentMindMapId={setCurrentMindMapId} />}
-          { mode === "idle" && <UserGuide />}
-          
-          { mode === "exploring" && !selectedNode && <Toolkit onSave={handleSaveMindMap} />}
-          { <ControlsGuide mode={mode} selectedNode={selectedNode} />}
-          
-          <div className={`node-panel ${selectedNode ? "active" : ""}`}>
-            {selectedNode && (
-              <div className="node-panel-content">
-                <input 
-                  type="text"
-                  className="node-panel-label"
-                  value={editableLabel}
-                  onChange={(e) => setEditableLabel(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleLabelSubmit()}
-                  onBlur={handleLabelSubmit}
-                />
-                <textarea 
-                  className="node-panel-description"
-                  value={editableDescription}
-                  onChange={(e) => setEditableDescription(e.target.value)}
-                  onBlur={handleDescriptionlSubmit}
-                  onPointerDown={(e) => e.stopPropagation()}
-                />
-              </div>
-            )}
-          </div>
-          {mode !== "exploring" && (
-            <InputBox 
-              onSubmit={handleSubmit} 
-              mode={mode}/>
-          )}
+			{
+				(mode === "exporting" || mode === "updating") && <Spinner mode={mode}/>
+			}
+			{ mode !== "exploring" && mode !== "updating" && mode !== "exporting" && (
+				<h1 className={mode === "thinking" ? "slide-up" : ""}>ThinkNode</h1>
+			)}
+			<div className={`canvas-wrapper ${selectedNode ? "shrink" : ""}`} onClick={closeModal}>
+				<Canvas 
+				camera={{ position: [10, 0, 10], fov: 40 }}
+				>
+				<group scale={1.1}>
+					<Scene  mode={mode} 
+							nodeData={nodeData} 
+							updateNodeCoords={handleUpdateNodePosition} 
+							selectedNode={selectedNode} 
+							currentMindMapId={currentMindMapId} 
+							addNewNode={handleAddNode} 
+							addNewLine={handleAddLine}
+							deleteItems={handleDeleteItems} />
+				</group>
+				</Canvas>
+			</div>
+			{ showAuthModal && <AuthModal defaultTab={defaultTab} close={closeModal} />}
+			{ showMindMapModal && <MindMapModal mindMapListData={mindMapListData} setMindMapListData={setMindMapListData} setCurrentMindMapId={setCurrentMindMapId} />}
+			{ mode === "idle" && <UserGuide />}
+			
+			{ (mode === "exploring" || mode === "updating" || mode === "exporting") && !selectedNode && <Toolkit onSave={handleSaveMindMap} />}
+			{ (mode === "exploring" || mode === "updating" || mode === "exporting") && <ControlsGuide mode={mode} selectedNode={selectedNode} />}
+			
+			<div className={`node-panel ${selectedNode ? "active" : ""}`}>
+				{selectedNode && (
+				<div className="node-panel-content">
+					<input 
+					type="text"
+					className="node-panel-label"
+					value={editableLabel}
+					onChange={(e) => setEditableLabel(e.target.value)}
+					onKeyDown={(e) => e.key === "Enter" && handleLabelSubmit()}
+					onBlur={handleLabelSubmit}
+					/>
+					<textarea 
+					className="node-panel-description"
+					value={editableDescription}
+					onChange={(e) => setEditableDescription(e.target.value)}
+					onBlur={handleDescriptionlSubmit}
+					onPointerDown={(e) => e.stopPropagation()}
+					/>
+				</div>
+				)}
+			</div>
+			{
+				!selectedNode && (
+				<InputBox 
+					isCollapsed={isInputCollapsed}	
+					onToggleCollapse={handleToggleInput}
+					onSubmit={handleSubmit} 
+					mode={mode}/>
+				)
+			}
         </main>
         <footer className="footer-wrapper">
           <div className={`footer ${mode === "thinking" ? "slide-down" : mode === "exploring" ? "slide-up-enter": ""}`}>

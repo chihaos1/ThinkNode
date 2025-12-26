@@ -110,6 +110,7 @@ export default function Node({
                 center
                 distanceFactor={12}
                 style={{ pointerEvents: 'none' }}
+                zIndexRange={[0, 0]}
             >
                 <div className="node-label">{label}</div>
             </Html>

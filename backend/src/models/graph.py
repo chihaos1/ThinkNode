@@ -18,8 +18,8 @@ class Edge(BaseModel):
     class Config:
         json_schema_extra = {
             "example": {
-                "from_node": [0.0, 5.0, 0.0],
-                "to_node": [0.0, 0.0, 0.0]
+                "source": [0.0, 5.0, 0.0],
+                "target": [0.0, 0.0, 0.0]
             }
         }
 
