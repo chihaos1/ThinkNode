@@ -145,7 +145,7 @@ function App() {
         setNodeData(data)
         setTitle("Untitled Mind Map")
         setMode("exploring")
-		    setIsInputCollapsed(true)
+		    setIsInputCollapsed(false)
       } 
       else if (mode === "exploring") {
         setMode("updating")
@@ -181,7 +181,7 @@ function App() {
   }
 
   // ---------- Expanding or Collapse Input Bar in Mind Map ----------
-  const [isInputCollapsed, setIsInputCollapsed] = useState(true)
+  const [isInputCollapsed, setIsInputCollapsed] = useState(false)
 
   const handleToggleInput = () => {
     setIsInputCollapsed(prev => !prev)
@@ -444,7 +444,7 @@ function App() {
 			setShowMindMapModal(false)
 			setSelectedNode(null)
 			setMode("exploring");
-			setIsInputCollapsed(true)
+			setIsInputCollapsed(false)
         }
     };
 
