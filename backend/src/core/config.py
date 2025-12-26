@@ -1,8 +1,9 @@
 import pathlib
 import os
+from typing import List, Literal
+
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
-from typing import Literal
 
 load_dotenv(dotenv_path=pathlib.Path(__file__).parent.parent / ".env")
 
@@ -10,7 +11,10 @@ class Settings(BaseSettings):
     """Contains the configuration settings for the application"""
 
     # Core Settings
-    CORS_ORIGINS: list[str] = os.getenv("CORS_ORIGINS")
+    @property
+    def CORS_ORIGINS(self) -> List[str]:
+        cors_str = os.getenv("CORS_ORIGINS", "http://localhost:5173")
+        return [origin.strip() for origin in cors_str.split(',') if origin.strip()]
     ENVIRONMENT: Literal["DEV","PREPROD","PROD"] = os.getenv("ENVIRONMENT")
 
     # Project Settings
