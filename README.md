@@ -5,6 +5,7 @@ An AI-powered 3D mind mapping website that transforms ideas into interactive spa
 ## Table of Contents
 - [Features](#features)
 - [Demo](#demo)
+- [Tech Stack](#tech-stack)
   
 ## Features
 
@@ -69,3 +70,18 @@ Ask Claude follow-up questions to add new nodes, modify ore remove existing node
 
 ![update-mind-map](https://github.com/user-attachments/assets/93ae4470-cb2e-4747-abfe-370138830fba)
 
+## Tech Stack
+
+**Frontend**
+- React 19 + TypeScript
+- Three.js & React Three Fiber
+- Vite
+
+**Backend**
+- FastAPI (Python)
+- Claude AI (Anthropic)
+
+**Infrastructure**
+- Supabase (PostgreSQL + Auth)
+- Vercel (Frontend)
+- Railway (Backend)
