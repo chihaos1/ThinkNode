@@ -16,16 +16,16 @@ ThinkNode uses Claude AI to break down complex topics into structured concept hi
 ThinkNode is built with **React Three Fiber** and **Three.js**, allowing ideas to render in an interactive 3D space. Users can navigate through concepts with camera controls to rotate, pan, and zoom in/out the mind map.
 
 #### 🔗 Smart Node Connections
-ThinkNode creates meaningful connections between related concepts and organizes them spatially. Physical proximity reveals conceptual relationships.
+ThinkNode creates meaningful connections between related concepts and organizes them spatially in clusters. Physical proximity reveals conceptual relationships.
 - **Y-axis (Abstraction)**
   - High (+): Abstract theories and foundational concepts.
   - Low (-): Concrete examples and practical tools.
 - **X-axis (Themes)**
   - Different conceptual domains spread horizontally.
   - Related concepts cluster together in the same region.
--  **Z-axis (Relevance)**
+- **Z-axis (Relevance)**
   - High (+): Core concepts essential to the topic.
-  - Low (-): Contextual or peripheral information.
+  - Low (-): Contextual or peripheral information. 
 
 ####  ✏️ Interactive Editing
 - **Drag and Drop** - Move nodes freely in 3D space.
@@ -66,7 +66,7 @@ Remove nodes or lines as you continue to refine your mind map.
 ![remove-node-lines](https://github.com/user-attachments/assets/2877d65f-fea8-4203-a5ac-3eba74164676)
 
 #### 5. Refine with AI
-Ask Claude follow-up questions to add new nodes, modify ore remove existing nodes, or create a completly new mind map.
+Ask Claude follow-up questions to add new nodes, modify or remove existing nodes, or create a completly new mind map.
 
 ![update-mind-map](https://github.com/user-attachments/assets/93ae4470-cb2e-4747-abfe-370138830fba)
 
